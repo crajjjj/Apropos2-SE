@@ -1,0 +1,10 @@
+[
+    {"name": "Running Mascara (right)", "section":"Makeup", "texture":"makeup\\right_cheek_tears.dds", "area":"Face"},
+    {"name": "Running Mascara (left)", "section":"Makeup", "texture":"makeup\\left_cheek_tears.dds", "area":"Face"},
+    {"name": "Nails (right hand)", "section":"Makeup", "texture":"makeup\\right_hand_nails.dds", "area":"Hands"},
+    {"name": "Nails (left hand)", "section":"Makeup", "texture":"makeup\\left_hand_nails.dds", "area":"Hands"},
+    {"name": "Nails (both hands)", "section":"Makeup", "texture":"makeup\\both_hands_nails.dds", "area":"Hands"},
+    {"name": "Nails (right foot)", "section":"Makeup", "texture":"makeup\\right_foot_nails.dds", "area":"Feet"},
+    {"name": "Nails (left foot)", "section":"Makeup", "texture":"makeup\\left_foot_nails.dds", "area":"Feet"},
+    {"name": "Nails (both feet)", "section":"Makeup", "texture":"makeup\\both_feet_nails.dds", "area":"Feet"}
+]

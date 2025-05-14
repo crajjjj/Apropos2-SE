@@ -1,0 +1,38 @@
+[
+  {
+    "section": "Dirt", 
+    "name": "Dirt 1", 
+    "texture": "Scars Dirt\\dirt_1.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "Dirt", 
+    "name": "Dirt 2", 
+    "texture": "Scars Dirt\\dirt_2.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "Dirt", 
+    "name": "Dirt 3", 
+    "texture": "Scars Dirt\\dirt_3.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "Scars", 
+    "name": "Scarred 1", 
+    "texture": "Scars Dirt\\scarred_1.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "Scars", 
+    "name": "Scarred 2", 
+    "texture": "Scars Dirt\\scarred_2.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "Scars", 
+    "name": "Scarred 3", 
+    "texture": "Scars Dirt\\scarred_3.dds", 
+    "area": "Body"
+  }
+]

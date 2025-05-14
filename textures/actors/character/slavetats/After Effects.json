@@ -1,0 +1,50 @@
+[
+  {
+    "section": "After Effects", 
+    "name": "After Effects 1", 
+    "texture": "After Effects\\after_effects_1.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "After Effects", 
+    "name": "After Effects 2", 
+    "texture": "After Effects\\after_effects_2.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "After Effects", 
+    "name": "After Effects 3", 
+    "texture": "After Effects\\after_effects_3.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "After Effects", 
+    "name": "After Effects 4", 
+    "texture": "After Effects\\after_effects_4.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "After Effects", 
+    "name": "battered", 
+    "texture": "After Effects\\face_battered.dds", 
+    "area": "Face"
+  }, 
+  {
+    "section": "Cuts", 
+    "name": "Cuts 1", 
+    "texture": "After Effects\\cuts_1.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "Cuts", 
+    "name": "Cuts 2", 
+    "texture": "After Effects\\cuts_2.dds", 
+    "area": "Body"
+  }, 
+  {
+    "section": "Cuts", 
+    "name": "Cuts 3", 
+    "texture": "After Effects\\cuts_3.dds", 
+    "area": "Body"
+  }
+]

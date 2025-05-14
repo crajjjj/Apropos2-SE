@@ -1,0 +1,32 @@
+[
+  {
+    "section": "Tears", 
+    "name": "Sob 1", 
+    "texture": "Sob Tears\\sob_1.dds", 
+    "area": "Face"
+  }, 
+  {
+    "section": "Tears", 
+    "name": "Sob 2", 
+    "texture": "Sob Tears\\sob_2.dds", 
+    "area": "Face"
+  }, 
+  {
+    "section": "Tears", 
+    "name": "Tears 1", 
+    "texture": "Sob Tears\\tears_1.dds", 
+    "area": "Face"
+  }, 
+  {
+    "section": "Tears", 
+    "name": "Tears 2", 
+    "texture": "Sob Tears\\tears_2.dds", 
+    "area": "Face"
+  }, 
+  {
+    "section": "Tears", 
+    "name": "Tears 3", 
+    "texture": "Sob Tears\\tears_3.dds", 
+    "area": "Face"
+  }
+]
