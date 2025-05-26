@@ -1742,7 +1742,9 @@ Function ProcessStageStartWT(SslThreadController thread, int Stage)
     Actor primaryActor
     Actor[] actorList = thread.Positions
     int pos = GetActorPositionFromList(actorList, PlayerRef)
-    Debug(">> Anim: " + animation.Name + ".Position:" + pos +".Tags detected:" + ApUtil.GetTagsAsString(animation))
+    if stage == 1 
+        Debug(">> Anim: " + animation.Name + ".Position:" + pos +".Tags detected:" + ApUtil.GetTagsAsString(animation))
+    endif
     If (thread.HasPlayer)
         primaryActor = PlayerRef
     Else
@@ -1778,8 +1780,10 @@ Function ProcessStageStartWT(SslThreadController thread, int Stage)
     String stimulationLabel = HentaiRimTags.StimulationLabel(animation, Stage, pos)
     String penisActionLabel = HentaiRimTags.PenisActionLabel(animation, Stage, pos)
     String endingLabel = HentaiRimTags.EndingLabel(animation, Stage, pos)
-    Debug(">>Penetration:" + penetrationLabel + ".Oral:" + oralLabel + ".Stimul:" + stimulationLabel + ".Penis:" + penisActionLabel + ".Ending:" + endingLabel  )
-   
+    If Config.TraceMessagesEnabled
+       Debug(">>Stage:" + Stage + ".Penetration:" + penetrationLabel + ".Oral:" + oralLabel + ".Stimul:" + stimulationLabel + ".Penis:" + penisActionLabel + ".Ending:" + endingLabel)
+    EndIf
+    
     if !isAnimationHentairimTaggedStrings(penetrationLabel, oralLabel, stimulationLabel, endingLabel, penisActionLabel)
         Debug(">> No stage tags detected")
         return
@@ -2079,14 +2083,18 @@ Function ProcessAnimEndWT(SslThreadController thread, int Stage)
         primaryActor = actorList[0]
         pos=0
     EndIf
-    Debug(">> Anim: " + animation.Name + ".Position:" + pos +". Tags detected:" + ApUtil.GetTagsAsString(animation))
+    ;Debug(">> Anim: " + animation.Name + ".Position:" + pos +". Tags detected:" + ApUtil.GetTagsAsString(animation))
 
     Bool stageTagsFound = isAnimationHentairimTagged(animation, 1, pos)
     if stageTagsFound && thread.HasPlayer
-        Debug(">> Stage tags detected for pc. No action needed")
+        If Config.TraceMessagesEnabled
+             Debug(">> Stage tags detected for pc. No action needed")
+        EndIf
         return
     else
-        Debug(">> Stage tags not detected for pc. Fallback to generic processing")
+         If Config.TraceMessagesEnabled
+            Debug(">> Stage tags not detected for pc. Fallback to generic processing")
+         EndIf
     endif
 
     Bool isPrimaryFemale = SexLab.GetGender(primaryActor) == FEMALE
