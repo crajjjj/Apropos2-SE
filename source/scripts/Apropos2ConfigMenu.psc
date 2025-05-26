@@ -325,6 +325,7 @@ Function WearAndTear()
     AddToggleOptionST("AutoMasturbateEnabled", "Enable Auto-Masturbate", Config.AutoMasturbateEnabled)
     AddSliderOptionST("MinArousalAutoMasturbate", "Min Arousal for  Auto-Masturbate", Config.MinArousalAutoMasturbate)
     AddToggleOptionST("WearTearMorphToggle", "$APR_WTMorphToggle", Config.WearTearMorph)
+	AddToggleOptionST("WTStaggerToggle", "Stagger", Config.WTStagger)
 	AddTextOptionST("TearWTPlayer", "Test W&T on Player", "TEST")
 
     SetCursorPosition(1)
@@ -519,11 +520,25 @@ State WearTearMorphToggle
 	EndEvent
 	Event OnDefaultST()
 		Config.WearTearMorph = True
-        SetToggleOptionValueST(Config.ConsumablesIncreaseArousal)
+        SetToggleOptionValueST(Config.WearTearMorph)
 	EndEvent
 	Event OnHighlightST()
         SetInfoText("$APR_WTMorphInfo")
     EndEvent  
+EndState
+
+State WTStaggerToggle
+	Event OnSelectST()
+		Config.WTStagger = !Config.WTStagger
+		SetToggleOptionValueST(Config.WTStagger)
+	EndEvent
+	Event OnDefaultST()
+		Config.WTStagger = True
+        SetToggleOptionValueST(Config.WTStagger)
+	EndEvent
+	Event OnHighlightST()
+        SetInfoText("Toggle Stagger when WT State increases")
+    EndEvent
 EndState
 
 State ConsumablesIncreaseArousal

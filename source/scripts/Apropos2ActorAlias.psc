@@ -364,7 +364,9 @@ State Tracking
         sslBaseVoice voice = SexLab.PickVoice(anActor)
         Int level = Min(AverageAbuseState * 10, 30)
         If change == "Increased"
-            Config.WTStaggerSpell.cast(anActor)
+			if(Config.WTStagger)
+				Config.WTStaggerSpell.cast(anActor)
+			endif
             voice.Moan(anActor, level, True)
         Else
             Int arousal = Framework.GetActorArousal(anActor)

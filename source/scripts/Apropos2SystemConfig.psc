@@ -36,6 +36,7 @@ Int Property SpiderEggWTHealAmount = 15 Auto Hidden
 Int Property ChaurusEggWTHealAmount = 15 Auto Hidden
 Bool Property ConsumablesIncreaseArousal = True Auto Hidden
 Bool Property WearTearMorph = True Auto Hidden
+Bool Property WTStagger = True Auto Hidden
 Int Property MinConsumableArousalIncr = 2 Auto Hidden
 Int Property MaxConsumableArousalIncr = 15 Auto Hidden
 Bool Property WTEffectsEnabled = True Auto Hidden
@@ -505,6 +506,7 @@ Function SetDefaults()
     ChanceWTDegrade = 5
     ConsumablesIncreaseArousal = True
 	WearTearMorph = True
+	WTStagger = True
 
     WTEffectsEnabled = True
     HardcoreWTEffectsEnabled = False
@@ -648,7 +650,7 @@ Bool Function ExportSettings()
     JMap.setInt(exportMapId, "ChanceWTDegrade", ChanceWTDegrade)
     JMap.setInt(exportMapId, "ConsumablesIncreaseArousal", ConsumablesIncreaseArousal As Int)
     JMap.setInt(exportMapId, "WearTearMorphToggle", WearTearMorph As Int)
-
+	JMap.setInt(exportMapId, "WTStagger", WTStagger As Int)
 
     JMap.setInt(exportMapId, "MinArousalAutoMasturbate", MinArousalAutoMasturbate)
     JMap.setInt(exportMapId, "AutoMasturbateEnabled", AutoMasturbateEnabled As Int)
@@ -748,6 +750,7 @@ Bool Function ImportSettings()
     ChanceWTDegrade = JMap.getInt(importMapId, "ChanceWTDegrade")
     ConsumablesIncreaseArousal = JMap.getInt(importMapId, "ConsumablesIncreaseArousal") As Bool
 	WearTearMorph = JMap.getInt(importMapId, "WearTearMorphToggle") As Bool
+	WTStagger = JMap.getInt(importMapId, "WTStagger") As Bool
 
     EnableSkinTextures = JMap.getInt(importMapId, "EnableSkinTextures") As Bool
     EnableAfterEffects = JMap.getInt(importMapId, "EnableAfterEffects") As Bool
