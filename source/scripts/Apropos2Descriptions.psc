@@ -1523,13 +1523,13 @@ Function DisplayAnimationStartChangeOrStageStartMessage(SslThreadController thre
 
     Bool isAnimationHentairimTagged = false
     ;String stageTagsAll = GetStageTagsAsString(animation, Stage)
-    String penetrationLabel = HentaiRimTags.PenetrationLabel(animation, Stage, pos)
+    String penetrationLabel = Apropos2Util.PenetrationLabel(animation, Stage, pos)
     Bool isIntensePen = isIntense(penetrationLabel)
-    String oralLabel = HentaiRimTags.OralLabel(animation, Stage, pos)
+    String oralLabel = Apropos2Util.OralLabel(animation, Stage, pos)
     Bool isIntenseOral = isIntense(OralLabel)
-    String stimulationLabel = HentaiRimTags.StimulationLabel(animation, Stage, pos)
-    String penisActionLabel = HentaiRimTags.PenisActionLabel(animation, Stage, pos)
-    String endingLabel = HentaiRimTags.EndingLabel(animation, Stage, pos)
+    String stimulationLabel = Apropos2Util.StimulationLabel(animation, Stage, pos)
+    String penisActionLabel = Apropos2Util.PenisActionLabel(animation, Stage, pos)
+    String endingLabel = Apropos2Util.EndingLabel(animation, Stage, pos)
     Debug(">>Penetration:" + penetrationLabel + ".Oral:" + oralLabel + ".Stimul:" + stimulationLabel + ".Penis:" + penisActionLabel + ".Ending:" + endingLabel  )
    
     if isAnimationHentairimTaggedStrings(penetrationLabel, oralLabel, stimulationLabel, endingLabel, penisActionLabel)
@@ -1674,9 +1674,9 @@ Function DisplayAnimationStartChangeOrStageStartMessage(SslThreadController thre
                     Else
                         receivingActorIndex = 0
                     EndIf
-                    penetrationLabel = HentaiRimTags.PenetrationLabel(animation, Stage, receivingActorIndex)
-                    oralLabel = HentaiRimTags.OralLabel(animation, Stage, receivingActorIndex)
-                    stimulationLabel = HentaiRimTags.StimulationLabel(animation, Stage, receivingActorIndex)
+                    penetrationLabel = Apropos2Util.PenetrationLabel(animation, Stage, receivingActorIndex)
+                    oralLabel = Apropos2Util.OralLabel(animation, Stage, receivingActorIndex)
+                    stimulationLabel = Apropos2Util.StimulationLabel(animation, Stage, receivingActorIndex)
                     
                     isFisting = IsGettingInsertedBig(stimulationlabel) || !isAnimationHentairimTagged
                     isStimulated = IsGettingStimulated(stimulationlabel) || !isAnimationHentairimTagged
@@ -1773,13 +1773,13 @@ Function ProcessStageStartWT(SslThreadController thread, int Stage)
     String maleGangBangSpecifier = GetGangBangSpecifier(animation)
 
     ;String stageTagsAll = GetStageTagsAsString(animation, Stage)
-    String penetrationLabel = HentaiRimTags.PenetrationLabel(animation, Stage, pos)
+    String penetrationLabel = Apropos2Util.PenetrationLabel(animation, Stage, pos)
     Bool isIntensePen = isIntense(penetrationLabel)
-    String oralLabel = HentaiRimTags.OralLabel(animation, Stage, pos)
+    String oralLabel = Apropos2Util.OralLabel(animation, Stage, pos)
     Bool isIntenseOral = isIntense(OralLabel)
-    String stimulationLabel = HentaiRimTags.StimulationLabel(animation, Stage, pos)
-    String penisActionLabel = HentaiRimTags.PenisActionLabel(animation, Stage, pos)
-    String endingLabel = HentaiRimTags.EndingLabel(animation, Stage, pos)
+    String stimulationLabel = Apropos2Util.StimulationLabel(animation, Stage, pos)
+    String penisActionLabel = Apropos2Util.PenisActionLabel(animation, Stage, pos)
+    String endingLabel = Apropos2Util.EndingLabel(animation, Stage, pos)
     If Config.TraceMessagesEnabled
        Debug(">>Stage:" + Stage + ".Penetration:" + penetrationLabel + ".Oral:" + oralLabel + ".Stimul:" + stimulationLabel + ".Penis:" + penisActionLabel + ".Ending:" + endingLabel)
     EndIf
@@ -1970,9 +1970,9 @@ Function ProcessStageStartWT(SslThreadController thread, int Stage)
                     Else
                         receivingActorIndex = 0
                     EndIf
-                    penetrationLabel = HentaiRimTags.PenetrationLabel(animation, Stage, receivingActorIndex)
-                    oralLabel = HentaiRimTags.OralLabel(animation, Stage, receivingActorIndex)
-                    stimulationLabel = HentaiRimTags.StimulationLabel(animation, Stage, receivingActorIndex)
+                    penetrationLabel = Apropos2Util.PenetrationLabel(animation, Stage, receivingActorIndex)
+                    oralLabel = Apropos2Util.OralLabel(animation, Stage, receivingActorIndex)
+                    stimulationLabel = Apropos2Util.StimulationLabel(animation, Stage, receivingActorIndex)
                     Actor actorWithStrapOn = actorList[actorWithStrapOnIndex]
                     
                     Actor receivingActor = actorList[receivingActorIndex]

@@ -4,7 +4,7 @@ ScriptName Apropos2Util hidden
 Import ApUtil
 
 Int Function GetVersion() Global
-    Return 10010
+    Return 10011
     ; 1.0   -> 10000
     ; 1.1   -> 11000
     ; 1.1b  -> 11001
@@ -13,7 +13,7 @@ Int Function GetVersion() Global
 EndFunction
 
 String Function GetVersionString() Global
-    Return "1.0010"
+    Return "1.0011"
 EndFunction
 
 Apropos2Framework Function GetAPI() Global
@@ -794,3 +794,245 @@ Int Function GetArousalIndex(Int arousalValue) Global
         Return 5
     EndIf
 EndFunction
+
+string Function GetLabel(sslBaseAnimation anim , int stage , String actorpos = "0" ) Global
+
+string ActorPosition = ""
+	
+	if ActorPos == 0
+		ActorPosition = "A"
+	elseif ActorPos == 1
+		ActorPosition = "B"
+	elseif ActorPos == 2
+		ActorPosition = "C"
+	elseif ActorPos == 3
+		ActorPosition = "D"
+	elseif ActorPos == 4
+		ActorPosition = "E"
+	endif
+
+
+	if anim.HasTag(stage+"LI") || anim.HasTag(stage+ActorPosition+"LDI")
+		return "LI"
+	elseif anim.HasTag(stage+"FA") || anim.HasTag(stage+ActorPosition+"FAP")
+		return "FA"
+	elseif anim.HasTag(stage+"SA") || anim.HasTag(stage+ActorPosition+"SAP")
+		return "SA"
+	elseif anim.HasTag(stage+"BA") 
+		return "BA"
+	elseif anim.HasTag(stage+"BV")
+		return "BV"
+	elseif anim.HasTag(stage+"FV") || anim.HasTag(stage+ActorPosition+"FVP")
+		return "FV"	
+	elseif anim.HasTag(stage+"SV") || anim.HasTag(stage+ActorPosition+"SVP")
+		return "SV"	
+	elseif anim.HasTag(stage+"DP") || anim.HasTag(stage+ActorPosition+"SDP") || anim.HasTag(stage+ActorPosition+"FDP")
+		return "DP"
+	elseif anim.HasTag(stage+"FB") || anim.HasTag(stage+ActorPosition+"FBJ")
+		return "FB"	
+	elseif anim.HasTag(stage+"SB") || anim.HasTag(stage+ActorPosition+"SBJ")
+		return "SB"	
+	elseif anim.HasTag(stage+"EN") || anim.HasTag(stage+ActorPosition+"ENO") || anim.HasTag(stage+ActorPosition+"ENI")
+		return "EN"
+	elseif anim.HasTag(stage+"TP") || ((anim.HasTag(stage+ActorPosition+"SDP") || anim.HasTag(stage+ActorPosition+"FDP")) && (anim.HasTag(stage+ActorPosition+"SBJ") || anim.HasTag(stage+ActorPosition+"FBJ")))
+		return "TP"
+	elseif anim.HasTag(stage+"SR") || (anim.HasTag(stage+ActorPosition+"SVP") && anim.HasTag(stage+ActorPosition+"SBJ")) || (anim.HasTag(stage+ActorPosition+"FVP") && anim.HasTag(stage+ActorPosition+"FBJ")) || (anim.HasTag(stage+ActorPosition+"FAP") && anim.HasTag(stage+ActorPosition+"FBJ"))  || (anim.HasTag(stage+ActorPosition+"SAP") && anim.HasTag(stage+ActorPosition+"SBJ"))   
+		return "SR"
+	else
+		return "LI" ;default lead in if no stimulating actions
+	endif
+
+endfunction
+
+string Function StimulationLabel(sslBaseAnimation anim , int stage , Int ActorPos) Global
+
+		string ActorPosition = ""
+	
+	if ActorPos == 0
+		ActorPosition = "A"
+	elseif ActorPos == 1
+		ActorPosition = "B"
+	elseif ActorPos == 2
+		ActorPosition = "C"
+	elseif ActorPos == 3
+		ActorPosition = "D"
+	elseif ActorPos == 4
+		ActorPosition = "E"
+	endif
+	
+	if anim.HasTag(stage+ActorPosition + "SST")
+		return "SST"	
+	elseif anim.HasTag(stage+ActorPosition + "FST")
+		returN "FST"	
+	elseif anim.HasTag(stage+ActorPosition + "BST")
+		return "BST"	
+	else
+		return "LDI" ;default lead in if no stimulating actions
+	endif
+
+endfunction
+
+string Function PenetrationLabel(sslBaseAnimation anim , int stage , Int ActorPos) Global
+
+	string ActorPosition = ""
+	
+	if ActorPos == 0
+		ActorPosition = "A"
+	elseif ActorPos == 1
+		ActorPosition = "B"
+	elseif ActorPos == 2
+		ActorPosition = "C"
+	elseif ActorPos == 3
+		ActorPosition = "D"
+	elseif ActorPos == 4
+		ActorPosition = "E"
+	endif
+	
+	if anim.HasTag(stage+ ActorPosition + "SVP")
+		return "SVP"
+	elseif anim.HasTag(stage+ActorPosition + "SAP")
+		return "SAP"
+	elseif anim.HasTag(stage+ActorPosition + "FVP")
+		return "FVP"
+	elseif anim.HasTag(stage+ActorPosition + "FAP")
+		return "FAP"
+	elseif anim.HasTag(stage+ActorPosition + "SCG")
+		return "SCG"
+	elseif anim.HasTag(stage+ActorPosition + "FCG")
+		return "FCG"
+	elseif anim.HasTag(stage+ActorPosition + "SAC")
+		return "SAC"
+	elseif anim.HasTag(stage+ActorPosition + "FAC")
+		return "FAC"
+	elseif anim.HasTag(stage+ActorPosition + "SDP")
+		return "SDP"
+	elseif anim.HasTag(stage+ActorPosition + "FDP")
+		return "SDP"
+	else
+		return "LDI" ;Default lead in if no stimulating actions
+	endif
+endfunction
+
+string Function PenisActionLabel(sslBaseAnimation anim , int stage , Int ActorPos) Global
+	
+	string ActorPosition = ""
+	
+	if ActorPos == 0
+		ActorPosition = "A"
+	elseif ActorPos == 1
+		ActorPosition = "B"
+	elseif ActorPos == 2
+		ActorPosition = "C"
+	elseif ActorPos == 3
+		ActorPosition = "D"
+	elseif ActorPos == 4
+		ActorPosition = "E"
+	endif
+	
+	if anim.HasTag(stage+ActorPosition + "SDV")
+		return "SDV"
+	elseif anim.HasTag(stage+ActorPosition + "FDV")
+		return "FDV"	
+	elseif anim.HasTag(stage+ActorPosition + "SDA")
+		retuRN "SDA"
+	elseif anim.HasTag(stage+ActorPosition + "FDA")
+		return "FDA"
+	elseif anim.HasTag(stage+ActorPosition + "SHJ")
+		reTURN "SHJ"
+	elseif anim.HasTag(stage+ActorPosition + "FHJ")
+		return "FHJ"
+	elseif anim.HasTag(stage+ActorPosition + "STF")
+		reTURN "STF"
+	elseif anim.HasTag(stage+ActorPosition + "FTF")
+		return "FTF"
+	elseif anim.HasTag(stage+ActorPosition + "SMF")
+		RETURN "SMF"
+	elseif anim.HasTag(stage+ActorPosition + "FMF")
+		return "FMF"
+	elseif anim.HasTag(stage+ActorPosition + "SFJ")
+		reTURN "SFJ"
+	elseif anim.HasTag(stage+ActorPosition + "SFJ")
+		returN "FFJ"
+	else
+		reTURN "LDI" ;default lead in if no stimulating actions
+	endif
+endfunction
+
+
+String Function OralLabel(sslBaseAnimation anim , int stage , Int ActorPos) Global
+	
+	string ActorPosition = ""
+	
+	if ActorPos == 0
+		ActorPosition = "A"
+	elseif ActorPos == 1
+		ActorPosition = "B"
+	elseif ActorPos == 2
+		ActorPosition = "C"
+	elseif ActorPos == 3
+		ActorPosition = "D"
+	elseif ActorPos == 4
+		ActorPosition = "E"
+	endif
+	
+	if anim.HasTag(stage+ ActorPosition + "KIS")
+		return "KIS"
+	elseif anim.HasTag(stage+ ActorPosition + "CUN")
+		return "CUN"
+	elseif anim.HasTag(stage+ ActorPosition + "FBJ")
+		return "FBJ"
+	elseif anim.HasTag(stage+ ActorPosition + "SBJ")
+		returN "SBJ"
+	else
+		reTURN "LDI"
+	endif
+
+endfunction
+
+String Function EndingLabel(sslBaseAnimation anim , int stage , Int ActorPos) Global
+	;Labels that identify actions on partners
+	
+	string ActorPosition = ""
+	
+	if ActorPos == 0
+		ActorPosition = "A"
+	elseif ActorPos == 1
+		ActorPosition = "B"
+	elseif ActorPos == 2
+		ActorPosition = "C"
+	elseif ActorPos == 3
+		ActorPosition = "D"
+	elseif ActorPos == 4
+		ActorPosition = "E"
+	endif
+	
+	if anim.HasTag(stage+ ActorPosition + "ENO")
+		return "ENO"
+	elseif anim.HasTag(stage+ ActorPosition + "ENI")
+		return "ENI"
+	else
+		Return "LDI"
+	endif
+
+endfunction
+
+string Function GetSFX(sslBaseAnimation anim , int stage) Global
+if anim.HasTag(stage+"SC")
+		return "SC"
+	elseif anim.HasTag(stage+"MC")
+		return "MC"
+	elseif anim.HasTag(stage+"FC")
+		return "FC"
+	elseif anim.HasTag(stage+"SS")
+		return "SS"	
+	elseif anim.HasTag(stage+"MS")
+		return "MS"
+	elseif anim.HasTag(stage+"FS")
+		return "FS"	
+	elseif anim.HasTag(stage+"RS")
+		return "RS"	
+	elseif anim.HasTag(stage+"NA")
+		return "NA"
+	endif
+
+endfunction

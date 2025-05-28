@@ -674,11 +674,11 @@ Bool Function isAnimationHentairimTagged (sslBaseAnimation animation , int stage
         return false
     endif
     String EMPTYTAG = "LDI"
-    String penetrationLabel = HentaiRimTags.PenetrationLabel(animation, stage, pos)
-    String oralLabel = HentaiRimTags.OralLabel(animation, stage, pos)
-    String stimulationLabel = HentaiRimTags.StimulationLabel(animation, stage, pos)
-    String endingLabel = HentaiRimTags.EndingLabel(animation, stage, pos)
-    String penisActionLabel = HentaiRimTags.PenisActionLabel(animation, stage, pos)
+    String penetrationLabel = Apropos2Util.PenetrationLabel(animation, stage, pos)
+    String oralLabel = Apropos2Util.OralLabel(animation, stage, pos)
+    String stimulationLabel = Apropos2Util.StimulationLabel(animation, stage, pos)
+    String endingLabel = Apropos2Util.EndingLabel(animation, stage, pos)
+    String penisActionLabel = Apropos2Util.PenisActionLabel(animation, stage, pos)
     Bool stageTagsFound = (stimulationLabel != EMPTYTAG || penetrationLabel != EMPTYTAG || oralLabel != EMPTYTAG || endingLabel != EMPTYTAG || penisActionLabel != EMPTYTAG )
     return stageTagsFound
 EndFunction
