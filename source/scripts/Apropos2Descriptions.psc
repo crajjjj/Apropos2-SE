@@ -119,13 +119,14 @@ Function AddMaleArousalTextsToMap(Int mapId, Actor primaryMaleActor, Bool isPrim
 EndFunction
 
 Function AddAllSynonymTokensToMap(Int mapId)
-    String[] allSynonymTokenNames = Database.AllSynonymTokenNames()
-    Int index = 0
-    While index < allSynonymTokenNames.Length
-        String randomSynonym = Database.RandomSynonym(allSynonymTokenNames[index])
-        JMap.setStr(mapId, allSynonymTokenNames[index], randomSynonym)        
-        index += 1    
-    EndWhile
+    JLua.evalLuaInt("apropos.Apropos2Descriptions.AddAllSynonymTokensToMap(args)", mapId, minimizeLifetime=false)
+    ; String[] allSynonymTokenNames = Database.AllSynonymTokenNames()
+    ; Int index = 0
+    ; While index < allSynonymTokenNames.Length
+    ;     String randomSynonym = Database.RandomSynonym(allSynonymTokenNames[index])
+    ;     JMap.setStr(mapId, allSynonymTokenNames[index], randomSynonym)
+    ;     index += 1
+    ; EndWhile
 EndFunction
 
 Function PresentMessage(String msg, SslThreadController thread = None)
@@ -2605,9 +2606,9 @@ Function DisplayOrgasmStartMessage(SslThreadController thread)
                     EndIf
 
                     If isVaginal
-                        DisplayFemaleActorFemaleVaginalDescriptions(thread, isReceivingVictim, actorWithStrapOn, receivingActor, effectiveVoice, True, Framework.IsVaginalVirgin(receivingActor))                    
+                        DisplayFemaleActorFemaleVaginalDescriptions(thread, isReceivingVictim, actorWithStrapOn, receivingActor, effectiveVoice, True, Framework.IsVaginalVirgin(receivingActor))
                     ElseIf isAnal
-                        DisplayFemaleActorFemaleAnalDescriptions(thread, isReceivingVictim, actorWithStrapOn, receivingActor, effectiveVoice, True, Framework.IsAnalVirgin(receivingActor))      
+                        DisplayFemaleActorFemaleAnalDescriptions(thread, isReceivingVictim, actorWithStrapOn, receivingActor, effectiveVoice, True, Framework.IsAnalVirgin(receivingActor))
                     ElseIf isBoobJob
                         DisplayFemaleActorFemaleBoobJobDescriptions(thread, isReceivingVictim, actorWithStrapOn, receivingActor, effectiveVoice, True)
                     EndIf
@@ -2674,9 +2675,9 @@ Function Debug(String msg)
     Config.Debug(msg, Source="AproposDescriptions")
 EndFunction
 
-;Function DisplayStageEndMessage(SslThreadController thread, Int stage)
+Function DisplayStageEndMessage(SslThreadController thread, Int stage)
 ; TODO
-;EndFunction
+EndFunction
 
 Function DisplayActorChangeStartMessage(SslThreadController thread)
 ; TODO

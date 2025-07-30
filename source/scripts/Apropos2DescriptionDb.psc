@@ -12,7 +12,7 @@ Function ClearJCObjects()
     JDB.setObj(StoreKey("synonyms"), 0)
     JDB.setObj(StoreKey("arousaladjectives"), 0)
     JDB.setObj(StoreKey("actors"), 0)
-    
+
     JDB.setObj(StoreKey("weartearadjectives"), 0)
     JDB.setObj(StoreKey("wearteareffects"), 0)
     JDB.setObj(StoreKey("wearteardamage"), 0)
@@ -20,7 +20,7 @@ EndFunction
 
 Function Setup()
     Parent.Setup()
-    
+
     Debug("Initializing Apropos Database")
     InitializeUniqueAnimations()
 
@@ -39,7 +39,7 @@ EndFunction
 
 Function InitializeThemes()
     ; load raw Themes definition into temporary JDB map
-    Int rootMapId = LoadAndStoreJsonFile("Themes", "themes-raw") 
+    Int rootMapId = LoadAndStoreJsonFile("Themes", "themes-raw")
 
     If !rootMapId
         Return
@@ -89,7 +89,7 @@ Function InitializeThemes()
 
         k += j
         i +=1
-    EndWhile    
+    EndWhile
 
     JDB.setObj(StoreKey("themes"), newMapId)
 
@@ -115,7 +115,7 @@ Function InitializeWearTearDamage()
 
     If !rootMapId || !Config.DebugMessagesEnabled
         Return
-    EndIf 
+    EndIf
 
     String[] allKeys = StringArrayFromJMapKeys(rootMapId)
 
@@ -139,7 +139,7 @@ Int Function GetScaledArousalAmountForConsumable(String consumable)
     If CheckFileExists(fullPath)
         Int jobj = JValue.readFromFile(fullPath)
 
-        If jobj != 0 
+        If jobj != 0
             JValue.retain(jobj)
             Int allValuesArray = JMap.allValues(jobj)
             Int maxHeal = JValue.evalLuaInt(allValuesArray, "return jc.accumulateValues(jobject, math.max)")
@@ -151,7 +151,7 @@ Int Function GetScaledArousalAmountForConsumable(String consumable)
             JValue.release(jobj)
         EndIf
     EndIf
-    Return -1 
+    Return -1
 EndFunction
 
 Int Function GetWearTearConsumableHealAmount(String name)
@@ -160,14 +160,14 @@ Int Function GetWearTearConsumableHealAmount(String name)
     If CheckFileExists(fullPath)
         Int jobj = JValue.readFromFile(fullPath)
 
-        If jobj != 0 
+        If jobj != 0
             JValue.retain(jobj)
             Int healAmount = JMap.getInt(jobj, name)
             JValue.release(jobj)
             Return healAmount
         EndIf
     EndIf
-    Return -1 
+    Return -1
 EndFunction
 
 Function InitializeWearTearEffects()
@@ -175,7 +175,7 @@ Function InitializeWearTearEffects()
 
     If !rootMapId || !CheckIsJMap(rootMapId) || !Config.DebugMessagesEnabled
         Return
-    EndIf   
+    EndIf
 
     Bool success = True
 
@@ -183,15 +183,15 @@ Function InitializeWearTearEffects()
     Int i = 0
     While i < allKeys.Length && success
         String outerKey = allKeys[i] ; 'oral', 'oral-hc'
-        
+
         Int mapId = JDB.solveObj(QueryKey("wearteareffects", outerKey))
 
         If !CheckIsJMap(mapId)
             Debug("Could not read values for '" + QueryKey("wearteareffects", outerKey) + "'")
             success = False
         Else
-            String[] subKeys = StringArrayFromJMapKeys(mapId) 
-            
+            String[] subKeys = StringArrayFromJMapKeys(mapId)
+
             Int j = 0
 
             While j < subKeys.Length && success
@@ -224,7 +224,7 @@ Function InitializeUniqueAnimations()
 
     If !rootMapId || !Config.DebugMessagesEnabled
         Return
-    EndIf 
+    EndIf
 
     String[] allKeys = StringArrayFromJMapKeys(rootMapId)
 
@@ -249,11 +249,11 @@ Function InitializeSynonyms();string theme)
     EndIf
 
     String[] allKeys = StringArrayFromJMapKeys(rootMapId)
-    
+
     Int index = 0
-    
+
     Bool success = True
-    
+
     While ((index < allKeys.Length) && success)
         String currentTokenName = allKeys[index]
         Int arrayId = JDB.solveObj(QueryKey("synonyms", currentTokenName))
@@ -266,7 +266,7 @@ Function InitializeSynonyms();string theme)
         EndIf
         index += 1
     EndWhile
-    
+
     If success
         Debug("Synonyms successfully read, parsed and stored.")
     Else
@@ -281,7 +281,7 @@ Function InitializeArousalAdjectives();string theme)
         Return
     EndIf
 
-    Bool success = True 
+    Bool success = True
 
     String[] allKeys = StringArrayFromJMapKeys(rootMapId)
 
@@ -298,7 +298,7 @@ Function InitializeArousalAdjectives();string theme)
         Else
 
             String[] subKeys = StringArrayFromJMapKeys(mapId)
-            
+
             Int j = 0
 
             While (j < subKeys.Length && success)
@@ -322,7 +322,7 @@ Function InitializeArousalAdjectives();string theme)
         Debug("Arousal Adjectives successfully read, parsed and stored.")
     Else
         Debug("Could not read all Arousal Adjectives.")
-    EndIf    
+    EndIf
 
 EndFunction
 
@@ -333,17 +333,17 @@ Function InitializeWearAndTearAdjectives();string theme)
         Return
     EndIf
 
-    Bool success = True 
+    Bool success = True
 
     Int wearTearMapId = JDB.solveObj(QueryKey("weartearadjectives.descriptors"))
-    
+
     If !CheckIsJMap(wearTearMapId)
         Debug("Could not read values for '" + QueryKey("weartearadjectives.descriptors") + "'")
         success = False
     Else
 
         String[] allKeys = StringArrayFromJMapKeys(wearTearMapId)
-        
+
         Int index = 0
 
         While (index < allKeys.Length && success)
@@ -364,7 +364,7 @@ Function InitializeWearAndTearAdjectives();string theme)
         Debug("Synonyms successfully read, parsed and stored.")
     Else
         Debug("Could not read all synonyms.")
-    EndIf    
+    EndIf
 
 EndFunction
 
@@ -403,7 +403,7 @@ String Function RandomSynonym(String tokenName)
         Debug("Could not find synonym array for " + tokenName)
         Return ""
     EndIf
-    
+
     Int random = Utility.RandomInt(0, JArray.count(arrayId) - 1)
     Return JArray.getStr(arrayId, random)
 EndFunction
@@ -415,7 +415,7 @@ String Function RandomArousal(String tokenName, Int arousalLevel)
         Debug("Could not find arousal adjective array for " + tokenName)
         Return ""
     EndIf
-    
+
     Int random = Utility.RandomInt(0, JArray.count(arrayId) - 1)
     Return JArray.getStr(arrayId, random)
 EndFunction
@@ -456,7 +456,7 @@ EndFunction
 ;         Else
 ;             Log("Could not find any configured themes")
 ;             Return ""
-;         EndIf        
+;         EndIf
 ;     EndIf
 
 ; EndFunction
@@ -471,14 +471,14 @@ String Function RetrieveDescription(String anim, String subjectPrefix, String pa
     If isActorVictim
         rape = "_Rape"
     EndIf
-    
+
     String orgasm = ""
     If isOrgasm
         orgasm = "_Orgasm"
     EndIf
 
     Bool isUnique = IsUnique(anim)
-    
+
     sexPart = "_" + sexPart
     partner = "_" + partner
     String animation = "_" + anim
@@ -491,7 +491,7 @@ String Function RetrieveDescription(String anim, String subjectPrefix, String pa
             Debug("Fullpath: " + fullPath)
         EndIf
     EndIf
-    
+
     If !isUnique || !CheckFileExists(fullPath)
         If Config.TraceMessagesEnabled
             Debug("Animation: '" + anim + "' not listed as unique or not found. Falling back...")
@@ -506,8 +506,8 @@ String Function RetrieveDescription(String anim, String subjectPrefix, String pa
         Debug("Final. Could not find file '" + fullPath + "'")
         Return ""
     EndIf
-    
-    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)    
+
+    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)
     If arrayId == 0
         Debug("Could not find file '" + fullPath + "'")
         Return ""
@@ -530,7 +530,7 @@ String Function RetrieveStageProgressionDescription(String anim, String subjectP
     String rape = ""
     If isActorVictim
         rape = "_Rape"
-    EndIf    
+    EndIf
 
     String stageStr = "_Stage" + stage
 
@@ -540,25 +540,25 @@ String Function RetrieveStageProgressionDescription(String anim, String subjectP
         fullPath = GenerateFullPath(subjectPrefix + animation + rape + stageStr, subjectPrefix + animation)
         If Config.TraceMessagesEnabled
             Debug("Fullpath: " + fullPath)
-        EndIf        
+        EndIf
     EndIf
-    
+
     If !isUnique || !CheckFileExists(fullPath)
         If Config.TraceMessagesEnabled
             Debug("Animation: '" + anim + "' not listed as unique or not found. Falling back...")
-        EndIf        
+        EndIf
         fullPath = GenerateFullPath(subjectPrefix + partner + sexPart + rape + stageStr, subjectPrefix + partner)
         If Config.TraceMessagesEnabled
             Debug("Fullpath: " + fullPath)
-        EndIf        
+        EndIf
     EndIf
 
     If !CheckFileExists(fullPath)
         Debug("Final. Could not find file '" + fullPath + "'")
         Return ""
-    EndIf    
-    
-    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)    
+    EndIf
+
+    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)
     If !arrayId
         Debug("Could not find file '" + fullPath + "'")
         Return ""
@@ -576,15 +576,15 @@ String Function RetrieveCustomFemaleDescription(String modName, String eventName
 
     String fullPath = ""
 
-    If bodyPart 
+    If bodyPart
         bodyPart = "_" + bodyPart
     EndIf
 
-    If partner 
+    If partner
         partner = "_" + partner
     EndIf
 
-    If bodyPart 
+    If bodyPart
         If partner
             fullPath = GenerateFullPath(modName + eventName + bodyPart + partner, modName)
         Else
@@ -595,14 +595,14 @@ String Function RetrieveCustomFemaleDescription(String modName, String eventName
     EndIf
 
     Debug("Using file '" + fullPath + "'")
-    
-    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)    
+
+    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)
     If !arrayId
         Debug("Could not find file '" + fullPath + "'")
         Return ""
     EndIf
 
-    Return GetStringFromArray(arrayId, fullPath, narrativeVoice)    
+    Return GetStringFromArray(arrayId, fullPath, narrativeVoice)
 EndFunction
 
 String Function RetrieveFemaleWearTearChangedDescription(String change, String sexPart, String narrativeVoice)
@@ -621,8 +621,8 @@ String Function RetrieveFemaleWearTearChangedDescription(String change, String s
 
     sexPart = "_" + sexPart
     String fullPath = GenerateFullPath("FemaleActor_WearTear" + change + sexPart, "FemaleActor")
-    
-    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)    
+
+    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)
     If arrayId == 0
         Debug("Could not find file '" + fullPath + "'")
         Return ""
@@ -642,17 +642,17 @@ String Function RetrieveGoBackDescription(String animation, String subjectPrefix
     String rape = ""
     If isActorVictim
         rape = "_Rape"
-    EndIf    
+    EndIf
 
     String goBack = "_GoBack"
 
     String fullPath = GenerateFullPath(subjectPrefix + partner + sexPart + goBack + rape, subjectPrefix + partner)
-    
+
     If !CheckFileExists(fullPath)
         fullPath = GenerateFullPath(subjectPrefix + goBack + sexPart + rape, subjectPrefix)
     EndIf
-    
-    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)    
+
+    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)
     If !arrayId
         Debug("Could not find file '" + fullPath + "'")
         Return ""
@@ -672,17 +672,17 @@ String Function DisplayLoadDescriptions(String animation, String subjectPrefix, 
     String rape = ""
     If isActorVictim
         rape = "_Rape"
-    EndIf    
+    EndIf
 
     load = "_" + load
 
     String fullPath = GenerateFullPath(subjectPrefix + partner + sexPart + load + rape, subjectPrefix + partner)
-    
+
     If !CheckFileExists(fullPath)
         fullPath = GenerateFullPath(subjectPrefix + load + sexPart + rape, subjectPrefix)
     EndIf
-    
-    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)    
+
+    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)
     If !arrayId
         Debug("Could not find file '" + fullPath + "'")
         Return ""
@@ -695,14 +695,14 @@ String Function RetrieveVirginityLostDescription(String subjectPrefix, String se
     If config.TraceMessagesEnabled
         Log("RetrieveVirginityLostDescription: " + subjectPrefix + "," + StringIfElse(isActorVictim, "actorIsVictim") +"," + sexPart+","+narrativeVoice)
     EndIf
-    
+
     String rape = ""
     If isActorVictim
         rape = "_Rape"
     EndIf
 
     ; String theme = SelectTheme()
-    
+
     ; sexPart = "_" + sexPart
     ; String fullPath = GenerateFullPath(subjectPrefix + "_VirginityLost" + sexPart + rape, subjectPrefix, theme)
     ; If theme && !CheckFileExists(fullPath)
@@ -712,13 +712,13 @@ String Function RetrieveVirginityLostDescription(String subjectPrefix, String se
 
     sexPart = "_" + sexPart
     String fullPath = GenerateFullPath(subjectPrefix + "_VirginityLost" + sexPart + rape, subjectPrefix)
-    
-    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)    
+
+    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)
     If !arrayId
         Debug("Could not find file '" + fullPath + "'")
         Return ""
     EndIf
-    
+
     Return GetStringFromArray(arrayId, fullPath, narrativeVoice)
 EndFunction
 
@@ -738,7 +738,7 @@ String Function RetrieveMasturbationDescription(String animName, String subjectP
     EndIf
 
     ; String theme = SelectTheme()
-    
+
     ; String fullPath = GenerateFullPath(subjectPrefix + "_Masturbation" + orgasm + stage, subjectPrefix, theme)
     ; If theme && !CheckFileExists(fullPath)
     ;     ; fallback
@@ -746,34 +746,34 @@ String Function RetrieveMasturbationDescription(String animName, String subjectP
     ; EndIf
 
     String fullPath = GenerateFullPath(subjectPrefix + "_Masturbation" + orgasm + stage, subjectPrefix)
-    
-    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)    
+
+    Int arrayId = ReadDescriptionFileWithNarrativeVoice(fullPath, narrativeVoice)
     If !arrayId
         Debug("Could not find file '" + fullPath + "'")
         Return ""
     EndIf
-    
+
     Return GetStringFromArray(arrayId, fullPath, narrativeVoice)
 EndFunction
 
 Int Function ReadDescriptionFileWithNarrativeVoice(String fullPath, String narrativeVoice)
-    
+
     If !CheckFileExists(fullPath)
         Return 0
     EndIf
-    
+
     Int rootMap = JValue.readFromFile(fullPath)
-    
+
     If !rootMap
         Debug("Problems parsing file '" + fullPath + "'. Check Json validity at jsonlint.com")
         Return 0
-    EndIf   
-    
+    EndIf
+
     If !JMap.hasKey(rootMap, narrativeVoice)
         Debug("Could not find narrative voice '" + narrativeVoice + "' for file '" + fullPath + "'. Also check Json validity at jsonlint.com")
         Return 0
     EndIf
-    
+
     Return JMap.getObj(rootMap, narrativeVoice)
 EndFunction
 
@@ -783,7 +783,7 @@ String Function GetStringFromArray(Int arrayId, String fullPath, String narrativ
     If count == 0
         If config.DebugMessagesEnabled
             Debug("Apparently there are no descriptions in the file '" + fullPath + "' for the narrative voice " + narrativeVoice)
-        EndIf        
+        EndIf
     Else
         Int random = Utility.RandomInt(0, count - 1)
         result = JArray.getStr(arrayId, random)
@@ -793,7 +793,7 @@ String Function GetStringFromArray(Int arrayId, String fullPath, String narrativ
             EndIf
         ElseIf config.TraceMessagesEnabled
             Log("AproposDescriptionDb.GetStringFromArray() returning: " + result)
-        EndIf        
+        EndIf
     EndIf
     Return result
 EndFunction
@@ -831,16 +831,16 @@ String Function RetrieveMaleStageProgressionDescription(String animation, String
 EndFunction
 
 String Function RetrieveFemaleVirginityLostDescription(Bool isActorVictim, String sexPart, String narrativeVoice)
-    Return RetrieveVirginityLostDescription("FemaleActor", sexPart, narrativeVoice, isActorVictim)   
+    Return RetrieveVirginityLostDescription("FemaleActor", sexPart, narrativeVoice, isActorVictim)
 EndFunction
 
 String Function RetrieveMaleVirginityLostDescription(Bool isActorVictim, String sexPart, String narrativeVoice)
-    Return RetrieveVirginityLostDescription("MaleActor", sexPart, narrativeVoice, isActorVictim)   
+    Return RetrieveVirginityLostDescription("MaleActor", sexPart, narrativeVoice, isActorVictim)
 EndFunction
 
 ; sexPart = Oral, Anal, Vaginal, Boobjob, or GangBang
 String Function RetrieveFemaleDescription(String animation, String partner, Bool isActorVictim, Bool isOrgasm, String sexPart, String narrativeVoice)
-    Return RetrieveDescription(animation, "FemaleActor", partner, isActorVictim, isOrgasm, sexPart, narrativeVoice)   
+    Return RetrieveDescription(animation, "FemaleActor", partner, isActorVictim, isOrgasm, sexPart, narrativeVoice)
 EndFunction
 
 ; sexPart = Oral, Anal, Vaginal, Boobjob, or GangBang
@@ -849,6 +849,11 @@ String Function RetrieveMaleDescription(String animation, String partner, Bool i
 EndFunction
 
 String Function ReplaceTokens(String source, Int tokenMapId)
+
+    String result = JLua.evalLuaStr("return apropos.Apropos2DescriptionDb.replaceTokens(args.source, args.tokenMap)",\
+        JLua.setStr("source",source, JLua.setObj("tokenMap",tokenMapId) )\
+    )
+
     ;Debug("ReplaceTokens")
     ;DebugJC(tokenMapId, "TokenMap:")
 
@@ -860,55 +865,13 @@ String Function ReplaceTokens(String source, Int tokenMapId)
         ;Log("TokenNames : " + StringArrayToString(StringArrayFromJArray(allKeys)))
         ;Log("TokenValues : " + StringArrayToString(StringArrayFromJArray(allValues)))
     EndIf
-    
-    String result = ""
-    
-    While StringUtil.GetLength(source) > 0
-        ;ToUserLog("source = " + source)
-        Int sourceLength = StringUtil.GetLength(source)
-        
-        Int indexTokenStart = StringUtil.Find(source, "{")
-        Int indexTokenEnd = StringUtil.Find(source, "}")
-        
-        ;ToUserLog("0. indexTokenStart = " + indexTokenStart + ", indexTokenEnd = " + indexTokenEnd)
-        
-        If indexTokenStart != -1 && indexTokenEnd != -1
-            String tokenName = Substring(source, indexTokenStart, indexTokenEnd - indexTokenStart + 1);
-            ;ToUserLog("1. tokenName = " + tokenName)
-            ;ToUserLog("2. tokenIndex = " + tokenIndex)
-            String beforeToken = Substring(source, 0, indexTokenStart);
-            String afterToken = Substring(source, indexTokenEnd + 1, sourceLength - (indexTokenEnd + 1));
-            ;ToUserLog("3. beforeToken = " + beforeToken)
-            ;ToUserLog("4. afterToken = " + afterToken)
-            If JMap.hasKey(tokenMapId, tokenName)
-                String tokenValue = JMap.getStr(tokenMapId, tokenName)
-                ;ToUserLog("Replacing '" + tokenName + "' with value '" + tokenValue + "'")
-                If tokenValue == ""
-                    result = result + TrimEnd(beforeToken)
-                Else
-                    result = result + beforeToken + tokenValue;
-                EndIf
-                ;ToUserLog("5. result = " + result)
-            Else
-                result = result + beforeToken
-                ;ToUserLog("6. result = " + result)					
-            EndIf                
-            
-            source = afterToken;
-        Else
-            result = result + source;
-            ;ToUserLog("7. result = " + result)
-            source = "";
-        EndIf
-        
-    EndWhile
 
     If Config.TraceMessagesEnabled
         Log("AproposDescriptionDb.ReplaceTokens returned : " + result)
     EndIf
-    
+
     Return result
-    
+
 EndFunction
 
 Function Log(String msg)
