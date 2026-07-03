@@ -10,7 +10,7 @@
     Final="false">
     <Variables>
         <!-- Set the name of your mod: -->
-        <Variable Name="ModName" Value="Apropos2 Remastered Patch" />
+        <Variable Name="ModName" Value="Apropos2 Patch" />
         <!-- The folder where you store all of your mods -->
         <Variable Name="ModsFolder" Value="C:\Playground\Skyrim\mods" />
         <!-- Optional folder with additional source code for imports -->
@@ -34,7 +34,7 @@
         <Import>C:\Playground\Skyrim\mods\build\iwantWidgets\Source\Scripts</Import>
         <Import>C:\Playground\Skyrim\mods\build\iwantstatusbars\Source\Scripts</Import>
         <Import>C:\Playground\Skyrim\mods\build\SkyUI_5.1_SDK\Scripts\Source</Import>
-         <Import>C:\Playground\Skyrim\mods\build\skyui-master\dist\Data\Scripts\Source</Import>
+        <Import>C:\Playground\Skyrim\mods\build\skyui-master\dist\Data\Scripts\Source</Import>
         <Import>C:\Playground\Skyrim\mods\build\Papyrus Extender\source\scripts</Import>
         <Import>C:\Playground\Skyrim\mods\build\JContainers SE\Data\scripts\source</Import>
         <Import>C:\Playground\Skyrim\mods\build\racemenu\scripts\source</Import>
@@ -68,6 +68,7 @@
             <Match In="Source\Scripts">*.psc</Match>
              <Match In="Apropos\db">*.txt</Match>
             <Match In="Scripts">*.pex</Match>
+            <Match In="SKSE\Plugins\JCData\lua\apropos">*.lua</Match>
             <!--<Match In="SKSE\Plugins">*.dll</Match>-->
             <Match In="Interface">*</Match>
         </ZipFile>
