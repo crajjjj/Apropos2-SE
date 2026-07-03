@@ -336,14 +336,14 @@ Function WearAndTear()
     Int svlFlag = IntIfElse(slaveTatsPresent, OPTION_FLAG_NONE, OPTION_FLAG_DISABLED)
 
     AddTextOption("<font color='#FFCC66'>Slavetats Mod status</font>", StringIfElse(slaveTatsPresent, "Found Slavetats", "Did not find Slavetats"))
-    AddToggleOptionST("EnableSkinTextures", "$APR_EnableSkinTextures", Config.EnableSkinTextures, slvflag)
-    AddToggleOptionST("EnableAfterEffects", "$APR_EnableAfterEffects", Config.EnableAfterEffects, slvflag)
-    AddToggleOptionST("EnableCutScratches", "$APR_EnableCutScratches", Config.EnableCutScratches, slvflag)
-    AddToggleOptionST("EnableDaedricScars", "$APR_EnableDaedricScars", Config.EnableDaedricScars, slvflag)
-    AddToggleOptionST("EnableTearsAndSobs", "$APR_EnableTearsAndSobs", Config.EnableTearsAndSobs, slvflag)
-    AddToggleOptionST("EnableMascaraSmears", "$APR_EnableMascaraSmears", Config.EnableMascaraSmears, slvflag)
-    AddColorOptionST("TatsColorTint", "$APR_TatsColorTint", Config.TatsColorTint, slvflag)
-    AddColorOptionST("MascaraTatsColorTint", "$APR_MascaraTatsColorTint", Config.MascaraTatsColorTint, slvflag)
+    AddToggleOptionST("EnableSkinTextures", "$APR_EnableSkinTextures", Config.EnableSkinTextures, svlFlag)
+    AddToggleOptionST("EnableAfterEffects", "$APR_EnableAfterEffects", Config.EnableAfterEffects, svlFlag)
+    AddToggleOptionST("EnableCutScratches", "$APR_EnableCutScratches", Config.EnableCutScratches, svlFlag)
+    AddToggleOptionST("EnableDaedricScars", "$APR_EnableDaedricScars", Config.EnableDaedricScars, svlFlag)
+    AddToggleOptionST("EnableTearsAndSobs", "$APR_EnableTearsAndSobs", Config.EnableTearsAndSobs, svlFlag)
+    AddToggleOptionST("EnableMascaraSmears", "$APR_EnableMascaraSmears", Config.EnableMascaraSmears, svlFlag)
+    AddColorOptionST("TatsColorTint", "$APR_TatsColorTint", Config.TatsColorTint, svlFlag)
+    AddColorOptionST("MascaraTatsColorTint", "$APR_MascaraTatsColorTint", Config.MascaraTatsColorTint, svlFlag)
 EndFunction
 
 State TearWTPlayer
@@ -1000,7 +1000,7 @@ State MinArousalForHugeLoad
         SetSliderOptionValueST(Config.MinArousalForHugeLoad, "{0}")
     EndEvent
     Event OnDefaultST()
-        Config.MinArousalForHugeLoad = 30
+        Config.MinArousalForHugeLoad = 50
         SetSliderOptionValueST(Config.MinArousalForHugeLoad, "{0}")
     EndEvent
     Event OnHighlightST()
@@ -1574,7 +1574,7 @@ State MaxGoBacksPerAnimation
         SetSliderOptionValueST(Config.MaxGoBacksPerAnimation, "{0}")
     EndEvent
     Event OnDefaultST()
-        Config.MaxGoBacksPerAnimation = 30
+        Config.MaxGoBacksPerAnimation = 2
         SetSliderOptionValueST(Config.MaxGoBacksPerAnimation, "{0}")
     EndEvent
     Event OnHighlightST()

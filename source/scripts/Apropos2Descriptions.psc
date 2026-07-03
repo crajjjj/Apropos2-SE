@@ -1542,7 +1542,7 @@ Function DisplayAnimationStartChangeOrStageStartMessage(SslThreadController thre
     Bool isFistingS = IsGettingInsertedBig(stimulationlabel) || !isAnimationHentairimTagged
     Bool isStimulated = IsGettingStimulated(stimulationlabel) || !isAnimationHentairimTagged
     Bool isVaginalPenetrated = IsGettingVaginallyPenetrated(penetrationLabel) || !isAnimationHentairimTagged
-    Bool isAnalPenetrated = IsGettingVaginallyPenetrated(penetrationLabel) || !isAnimationHentairimTagged
+    Bool isAnalPenetrated = IsGettingAnallyPenetrated(penetrationLabel) || !isAnimationHentairimTagged
     Bool isOralPenetrated = IsSuckingoffOther(oralLabel) || !isAnimationHentairimTagged
     Bool isDP = IsGettingDoublePenetrated(penetrationLabel) || !isAnimationHentairimTagged
     Bool isCummedInside = IsCummedInside(endingLabel) || !isAnimationHentairimTagged
@@ -1682,7 +1682,7 @@ Function DisplayAnimationStartChangeOrStageStartMessage(SslThreadController thre
                     isFisting = IsGettingInsertedBig(stimulationlabel) || !isAnimationHentairimTagged
                     isStimulated = IsGettingStimulated(stimulationlabel) || !isAnimationHentairimTagged
                     isVaginalPenetrated = IsGettingVaginallyPenetrated(penetrationLabel) || !isAnimationHentairimTagged
-                    isAnalPenetrated = IsGettingVaginallyPenetrated(penetrationLabel) || !isAnimationHentairimTagged
+                    isAnalPenetrated = IsGettingAnallyPenetrated(penetrationLabel) || !isAnimationHentairimTagged
                     isOralPenetrated = IsSuckingoffOther(oralLabel) || !isAnimationHentairimTagged
                     isDP = IsGettingDoublePenetrated(penetrationLabel) || !isAnimationHentairimTagged
                     
@@ -1705,7 +1705,7 @@ Function DisplayAnimationStartChangeOrStageStartMessage(SslThreadController thre
                     ElseIf isBoobJob
                         DisplayFemaleActorFemaleBoobJobDescriptions(thread, isReceivingVictim, actorWithStrapOn, receivingActor, effectiveVoice, False, stage)
                     ElseIf isOral
-                        DisplayFemaleActorFemaleBoobJobDescriptions(thread, isReceivingVictim, actorWithStrapOn, receivingActor, effectiveVoice, False, stage)
+                        DisplayFemaleActorFemaleOralDescriptions(thread, isReceivingVictim, actorWithStrapOn, receivingActor, effectiveVoice, False, False, stage)
                     EndIf
                 EndIf
             ; else it is a MF animation playing with two F's and no StrapOn
@@ -1724,7 +1724,7 @@ Function DisplayAnimationStartChangeOrStageStartMessage(SslThreadController thre
                 DisplayFemaleActorFemaleFootjobDescriptions(thread, isPrimaryVictim, activeActor, primaryActor, effectiveVoice, False, stage)
             ElseIf isHandJob
                 ; who is primary and who is active? Gonna just use the default answers: that 0-PlayerRef, 1-other chick
-                DisplayFemaleActorFemaleFootjobDescriptions(thread, isPrimaryVictim, activeActor, primaryActor, effectiveVoice, False, stage)
+                DisplayFemaleActorFemaleHandjobDescriptions(thread, isPrimaryVictim, activeActor, primaryActor, effectiveVoice, False, stage)
             EndIf
         Else ; has Lesbian tag
             DisplayFemaleActorFemaleLesbianDescriptions(thread, isPrimaryVictim, activeActor, primaryActor, effectiveVoice, False, stage)
@@ -2627,7 +2627,7 @@ Function DisplayOrgasmStartMessage(SslThreadController thread)
                 DisplayFemaleActorFemaleFootjobDescriptions(thread, isPrimaryVictim, activeActor, primaryActor, effectiveVoice, True)
             ElseIf isHandJob
                 ; who is primary and who is active? Gonna just use the default answers: that 0-PlayerRef, 1-other chick
-                DisplayFemaleActorFemaleFootjobDescriptions(thread, isPrimaryVictim, activeActor, primaryActor, effectiveVoice, True)
+                DisplayFemaleActorFemaleHandjobDescriptions(thread, isPrimaryVictim, activeActor, primaryActor, effectiveVoice, True)
             EndIf            
         Else ; has Lesbian tag
             ; currently hardcoding False for virginitylost - cuz? I don't know! Do people consider lesbian sex virginity loss possible?

@@ -147,8 +147,8 @@ Int Function GetScaledArousalAmountForConsumable(String consumable)
             Int healAmount = JMap.getInt(jobj, consumable)
             Int scaled = Lerp(healAmount As Float, minHeal As Float, maxHeal As Float, Config.MinConsumableArousalIncr, Config.MaxConsumableArousalIncr) As Int
             Trace("consumables min value=" + minHeal + ", max=" + maxHeal + ", scaled arousal="+ scaled + " for " + consumable + " which has heal=" + healAmount)
-            Return scaled
             JValue.release(jobj)
+            Return scaled
         EndIf
     EndIf
     Return -1

@@ -595,14 +595,17 @@ State Tracking
     EndFunction      
 
     Function UpdateAbuseTextures(bool increasingAbuse)
-        If !Config.EnableSkinTextures
-            Return
-        EndIf
         ; Int Function AddTattoo(Actor anActor, String name, String texture, String section, String area, Int slot, Int colorTint)
 
         Actor anActor = GetActor()
-        ; remove previous textures
-        RemoveAllAbuseTextures(anActor) ; even if its not enabled, remove, in case MCM was changed
+        ; remove previous textures FIRST - even if skin textures were just disabled in the MCM,
+        ; so existing abuse textures get cleaned up instead of being left stuck on the actor.
+        RemoveAllAbuseTextures(anActor)
+
+        If !Config.EnableSkinTextures
+            Slavetats.synchronize_tattoos(anActor, True)
+            Return
+        EndIf
 
         If Config.EnableAfterEffects || Config.EnableTearsAndSobs || Config.EnableMascaraSmears ; general abuse
             Int slot = -1; 1
@@ -695,9 +698,10 @@ State Tracking
         If _lastAfterEffectsBodyTxrMapId != 0
             If Slavetats.remove_tattoos(anActor, _lastAfterEffectsBodyTxrMapId)
                 Debug("Failed to remove tattoo - AfterEffectsBody")
+            Else
+                JValue.release(_lastAfterEffectsBodyTxrMapId)
+                _lastAfterEffectsBodyTxrMapId = 0
             EndIf
-            JValue.release(_lastAfterEffectsBodyTxrMapId)
-            _lastAfterEffectsBodyTxrMapId = 0
         EndIf
     EndFunction
 
@@ -706,16 +710,18 @@ State Tracking
         If _lastMascaraSmearTxrMapId1 != 0
             If Slavetats.remove_tattoos(anActor, _lastMascaraSmearTxrMapId1)
                 Debug("Failed to remove tattoo - Mascara Tears")
+            Else
+                JValue.release(_lastMascaraSmearTxrMapId1)
+                _lastMascaraSmearTxrMapId1 = 0
             EndIf
-            JValue.release(_lastMascaraSmearTxrMapId1)
-            _lastMascaraSmearTxrMapId1 = 0        
         EndIf
         If _lastMascaraSmearTxrMapId2 != 0
             If Slavetats.remove_tattoos(anActor, _lastMascaraSmearTxrMapId2)
                 Debug("Failed to remove tattoo - Mascara Tears")
+            Else
+                JValue.release(_lastMascaraSmearTxrMapId2)
+                _lastMascaraSmearTxrMapId2 = 0
             EndIf
-            JValue.release(_lastMascaraSmearTxrMapId2)
-            _lastMascaraSmearTxrMapId2 = 0        
         EndIf 
     EndFunction
 
@@ -724,16 +730,18 @@ State Tracking
         If _lastTearsSobsTxrMapId != 0
             If Slavetats.remove_tattoos(anActor, _lastTearsSobsTxrMapId)
                 Debug("Failed to remove tattoo - TearsSobs")
+            Else
+                JValue.release(_lastTearsSobsTxrMapId)
+                _lastTearsSobsTxrMapId = 0
             EndIf
-            JValue.release(_lastTearsSobsTxrMapId)
-            _lastTearsSobsTxrMapId = 0        
         EndIf
         If _lastAfterEffectsFaceTxrMapId != 0
             If Slavetats.remove_tattoos(anActor, _lastAfterEffectsFaceTxrMapId)
                 Debug("Failed to remove tattoo - AfterEffectsFace")
+            Else
+                JValue.release(_lastAfterEffectsFaceTxrMapId)
+                _lastAfterEffectsFaceTxrMapId = 0
             EndIf
-            JValue.release(_lastAfterEffectsFaceTxrMapId)
-            _lastAfterEffectsFaceTxrMapId = 0        
         EndIf    
     EndFunction
 
@@ -742,9 +750,10 @@ State Tracking
         If _lastCutsScratchesTxrMapId != 0
             If Slavetats.remove_tattoos(anActor, _lastCutsScratchesTxrMapId)
                 Debug("Failed to remove tattoo - CutsScratches")
+            Else
+                JValue.release(_lastCutsScratchesTxrMapId)
+                _lastCutsScratchesTxrMapId = 0
             EndIf
-            JValue.release(_lastCutsScratchesTxrMapId)
-            _lastCutsScratchesTxrMapId = 0             
         EndIf 
     EndFunction
 
@@ -753,9 +762,10 @@ State Tracking
         If _lastDaedricScarsTxrMapId != 0
             If Slavetats.remove_tattoos(anActor, _lastDaedricScarsTxrMapId)
                 Debug("Failed to remove tattoo - DaedricScars")
+            Else
+                JValue.release(_lastDaedricScarsTxrMapId)
+                _lastDaedricScarsTxrMapId = 0
             EndIf
-            JValue.release(_lastDaedricScarsTxrMapId)
-            _lastDaedricScarsTxrMapId = 0            
         EndIf    
     EndFunction         
 
@@ -839,8 +849,21 @@ State Tracking
         _lastOralSexPass += 1
 
         If (_vaginalWearTear <= 1 && _analWearTear <= 1 && _oralWearTear <= 1)
-            GoToState("ClearTracking")
+            CleanupAndClearTracking()
         EndIf
+    EndFunction
+
+    Function CleanupAndClearTracking()
+        ; Remove textures / spells / morphs while we are STILL in the Tracking state - the
+        ; Remove*/DispellAllSpells helpers are Tracking-scoped and resolve to no-op stubs once
+        ; we transition into the ClearTracking state, so cleanup must happen before the GoToState.
+        Actor anActor = GetActor()
+        If anActor
+            RemoveAllAbuseTextures(anActor, True)
+            DispellAllSpells(anActor)
+            ClearWTMorphs()
+        EndIf
+        GoToState("ClearTracking")
     EndFunction
 
     Function LogAllWearAndTear()
@@ -1061,7 +1084,9 @@ State Tracking
             _creatureAbuseAnalState = Apropos2Util.MapWearTearAmountToState(_creatureAbuseAnalWearTear)
             LogWearTearChange("creature-abuse-anal", _creatureAbuseAnalWearTear, _creatureAbuseAnalState)
 
-        ElseIf Config.EnableDaedricScars
+        EndIf
+
+        If Config.EnableDaedricScars
 
             Int oldDaedricAbuseAnalState = _daedricAbuseAnalState
             _daedricAbuseAnalWearTear = CalculateReducedWearTearValue(amountApplied, _daedricAbuseAnalWearTear)
@@ -1162,7 +1187,9 @@ State Tracking
             _creatureAbuseOralState = Apropos2Util.MapWearTearAmountToState(_creatureAbuseOralWearTear)
             LogWearTearChange("creature-abuse-oral", _creatureAbuseOralWearTear, _creatureAbuseOralState)
 
-        ElseIf Config.EnableDaedricScars
+        EndIf
+
+        If Config.EnableDaedricScars
 
             Int oldDaedricAbuseOralState = _daedricAbuseOralState
             _daedricAbuseOralWearTear = CalculateReducedWearTearValue(amountApplied, _daedricAbuseOralWearTear)
@@ -1510,9 +1537,14 @@ Function ApplyConsumable(Form consumable)
     ; Specifically do nothing in the default state       
 EndFunction
 
-Function ApplyEffectsAndTextures(Bool increasingAbuse) 
+Function ApplyEffectsAndTextures(Bool increasingAbuse)
     Debug("Attempts to call ApplyEffectsAndTextures while in empty state. Should be called in Tracking state")
-    ; Specifically do nothing in the default state       
+    ; Specifically do nothing in the default state
+EndFunction
+
+Function CleanupAndClearTracking()
+    ; Not in the Tracking state, so there is nothing tracked to clean up.
+    Debug("CleanupAndClearTracking called in empty state - nothing to clean up")
 EndFunction
 
 Function DoDisplayWearTearChangedMessage(Actor anActor, String change, String effectiveVoice, String bodyPart)

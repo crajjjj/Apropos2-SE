@@ -181,8 +181,8 @@ Function ClearTrackedNPCActors()
     Int i = 0
     While i < Actors.Length
         Apropos2ActorAlias anAlias = Actors[i]
-        If anAlias != "ReadyForTracking" && anAlias.GetActor() != PlayerRef
-            Actors[i].GoToState("ClearTracking")
+        If anAlias.GetState() != "ReadyForTracking" && anAlias.GetActor() != PlayerRef
+            Actors[i].CleanupAndClearTracking()
         EndIf
         i += 1
     EndWhile
