@@ -12,7 +12,7 @@ Apropos2DescriptionDb Property Database Auto
 Apropos2Descriptions Property Descriptions Auto
 SexLabFramework Property SexLab Auto
 slaUtilScr Property SlaUtil Auto
-
+bool cleanSpellsWhenWTDisabled = true
 Int _lastVaginalSexPass = 0
 Int _lastAnalSexPass = 0
 Int _lastOralSexPass = 0
@@ -437,18 +437,22 @@ State Tracking
             _deferredWTChangeBodyPart = ""               
         EndIf
     EndFunction
-
+    
     Function UpdateWearTearEffects()
 
+        Actor anActor = GetActor()
+
         If !Config.WTEffectsEnabled
+            if cleanSpellsWhenWTDisabled
+                 DispellAllSpells(anActor)
+                 cleanSpellsWhenWTDisabled = false
+            endif
             Return
         EndIf
-
+        cleanSpellsWhenWTDisabled = true
         If Config.TraceMessagesEnabled
-            DebugActor(GetActor(), "UpdateWearTearEffects for actor")
-        EndIf   
-
-        Actor anActor = GetActor()
+            DebugActor(anActor, "UpdateWearTearEffects for actor")
+        EndIf
 
         Int oralMagickaRegenDebuff
         Int oralSpeechDebuff
