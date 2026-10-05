@@ -6,6 +6,21 @@ Import ApUtil
 
 Int PAUSE_AFTER_VIRGINITY_LOST = 2 ; seconds
 
+; True once W&T was applied from SexLab P+ contact detection during the current
+; player scene. Read and cleared by ProcessAnimEndWT so the generic anim-end
+; fallback does not double-apply W&T.
+Bool _slppWTHandled = false
+
+; Bumped by every stage start and by the animation end of the player scene. A
+; PollStageWT loop that finds a newer value than the one it was started with stops
+; sampling: its stage is over.
+Int _slppPollToken = 0
+
+; thread.StartedAt of the player scene _slppWTHandled belongs to. SexLab sets that
+; time once per scene, before the first stage starts, so a different value means a
+; different scene.
+Float _slppSceneStartedAt = 0.0
+
 Function Setup()
     Parent.Setup()
     Log("Setup")
@@ -1738,19 +1753,158 @@ Function DisplayAnimationStartChangeOrStageStartMessage(SslThreadController thre
 
 EndFunction
 
+; Stage start of a scene. A stage that carries Hentairim tags is applied from them
+; at once, as on every framework: the tags know intensity, endings and fisting,
+; which contact detection does not. Only a stage without tags is handed to SexLab
+; P+ contact detection (see PollStageWT), where that is installed.
 Function ProcessStageStartWT(SslThreadController thread, int Stage)
     SslBaseAnimation animation = thread.Animation
-    Actor primaryActor
     Actor[] actorList = thread.Positions
     int pos = GetActorPositionFromList(actorList, PlayerRef)
     if stage == 1 
         Debug(">> Anim: " + animation.Name + ".Position:" + pos +".Tags detected:" + ApUtil.GetTagsAsString(animation))
     endif
+    If !thread.HasPlayer
+        Debug(">> NPCs only. Skipping:" + animation.Name )
+        return
+    EndIf
+    ; a new stage ends the contact poll of the previous one
+    _slppPollToken += 1
+    ; taken before any call out of this script, which could let the next stage's
+    ; handler in to bump it again
+    Int token = _slppPollToken
+    Float startedAt = thread.StartedAt
+    If startedAt != _slppSceneStartedAt
+        ; a new scene. The stage number cannot tell (see PollStageWT), the start time
+        ; can. A flag left over from a scene whose end was never processed must not
+        ; switch off this scene's anim-end fallback.
+        _slppSceneStartedAt = startedAt
+        _slppWTHandled = False
+    EndIf
+
+    String penetrationLabel = Apropos2Util.PenetrationLabel(animation, Stage, pos)
+    String oralLabel = Apropos2Util.OralLabel(animation, Stage, pos)
+    String stimulationLabel = Apropos2Util.StimulationLabel(animation, Stage, pos)
+    String penisActionLabel = Apropos2Util.PenisActionLabel(animation, Stage, pos)
+    String endingLabel = Apropos2Util.EndingLabel(animation, Stage, pos)
+    If Config.TraceMessagesEnabled
+       Debug(">>Stage:" + Stage + ".Penetration:" + penetrationLabel + ".Oral:" + oralLabel + ".Stimul:" + stimulationLabel + ".Penis:" + penisActionLabel + ".Ending:" + endingLabel)
+    EndIf
+
+    If isAnimationHentairimTaggedStrings(penetrationLabel, oralLabel, stimulationLabel, endingLabel, penisActionLabel)
+        ApplyStageWT(thread, Stage, penetrationLabel, oralLabel, stimulationLabel, endingLabel)
+        return
+    EndIf
+    If !Config.WearAndTearEnabled || !Apropos2SLPP.IsActive()
+        Debug(">> No stage tags detected")
+        return
+    EndIf
+    ; Runs until the stage is over. This call is the last statement of the
+    ; StageStart handler in Apropos2Framework, so nothing waits behind it.
+    PollStageWT(thread, token)
+EndFunction
+
+; W&T for one untagged stage of the player's scene, from SexLab P+ 2.19+ contact
+; detection. P+ has no event for contact starting or ending, so the stage is
+; sampled for as long as it lasts: actors are still moving into the pose when it
+; starts, and an act can begin part-way through. An act counts once it shows in
+; two samples in a row, which keeps contact left over from the previous pose out.
+; Each kind of act is applied at most once per stage, the rate stage tags give.
+Function PollStageWT(SslThreadController thread, Int token)
+    Bool donePen = False
+    Bool doneOral = False
+    Bool doneStim = False
+    String pendPen = "LDI"
+    String pendOral = "LDI"
+    String pendStim = "LDI"
+    String newPen
+    String newOral
+    String newStim
+    String[] seen
+    Int samples = 0
+    Utility.Wait(1.0)
+    ; The stage is read here rather than taken from the caller: P+ raises the
+    ; stage-start hook before it advances its own stage counter, so the number the
+    ; handler saw can still be the previous one.
+    Int pollStage = thread.Stage
+    ; 240 samples is at least six minutes: a cap so that a stage which never ends
+    ; cannot hold this loop forever
+    While samples < 240 && !(donePen && doneOral && doneStim) && token == _slppPollToken && Apropos2SLPP.IsSceneLive(thread, pollStage)
+        samples += 1
+        If !Apropos2SLPP.HasLiveData(thread)
+            ; no contact data yet (the scene is still registering) or at all
+            ; (detection off): keep looking, slowly
+            Utility.Wait(3.0)
+        Else
+            seen = Apropos2SLPP.SynthLabels(thread, PlayerRef)
+            newPen = "LDI"
+            newOral = "LDI"
+            newStim = "LDI"
+            If !donePen
+                If seen[0] == "LDI"
+                    pendPen = "LDI"
+                ElseIf pendPen == "LDI"
+                    pendPen = seen[0]
+                Else
+                    newPen = Apropos2SLPP.ConfirmLabel(pendPen, seen[0])
+                    donePen = True
+                EndIf
+            EndIf
+            ; kissing and cunnilingus cause no wear, so they neither count nor use up
+            ; the stage's oral slot
+            If !doneOral
+                If !IsSuckingoffOther(seen[1])
+                    pendOral = "LDI"
+                ElseIf pendOral == "LDI"
+                    pendOral = seen[1]
+                Else
+                    newOral = Apropos2SLPP.ConfirmLabel(pendOral, seen[1])
+                    doneOral = True
+                EndIf
+            EndIf
+            If !doneStim
+                If seen[2] == "LDI"
+                    pendStim = "LDI"
+                ElseIf pendStim == "LDI"
+                    pendStim = seen[2]
+                Else
+                    newStim = Apropos2SLPP.ConfirmLabel(pendStim, seen[2])
+                    doneStim = True
+                EndIf
+            EndIf
+            ; the token is checked again because the stage may have ended while the
+            ; sample was being taken
+            If (newPen != "LDI" || newOral != "LDI" || newStim != "LDI") && token == _slppPollToken
+                If Config.TraceMessagesEnabled
+                    Debug(">> P+ contact detection, stage " + pollStage + ": Pen=" + newPen + ".Oral=" + newOral + ".Stimul=" + newStim)
+                EndIf
+                ; only wear that was really applied may switch off the generic
+                ; anim-end fallback
+                If ApplyStageWT(thread, pollStage, newPen, newOral, newStim, "LDI", True)
+                    _slppWTHandled = True
+                EndIf
+            EndIf
+            Utility.Wait(1.5)
+        EndIf
+    EndWhile
+EndFunction
+
+; Applies one stage's wear and tear from a set of Hentairim-style labels, whichever
+; source they came from. "LDI" means nothing of that kind. fromContact says the
+; labels were detected on the player rather than read from the stage tags.
+; Returns True when any wear was applied.
+Bool Function ApplyStageWT(SslThreadController thread, int Stage, String penetrationLabel, String oralLabel, String stimulationLabel, String endingLabel, Bool fromContact = False)
+    SslBaseAnimation animation = thread.Animation
+    If !animation
+        return False ; the scene is already gone
+    EndIf
+    Actor primaryActor
+    Actor[] actorList = thread.Positions
     If (thread.HasPlayer)
         primaryActor = PlayerRef
     Else
         Debug(">> NPCs only. Skipping:" + animation.Name )
-        return
+        return False
     EndIf
     Bool needUpdate = false
     Bool isThreeWay = animation.HasTag("Orgy"); captures MMF, FMM, FFM, MFF
@@ -1774,21 +1928,9 @@ Function ProcessStageStartWT(SslThreadController thread, int Stage)
     String maleGangBangSpecifier = GetGangBangSpecifier(animation)
 
     ;String stageTagsAll = GetStageTagsAsString(animation, Stage)
-    String penetrationLabel = Apropos2Util.PenetrationLabel(animation, Stage, pos)
     Bool isIntensePen = isIntense(penetrationLabel)
-    String oralLabel = Apropos2Util.OralLabel(animation, Stage, pos)
     Bool isIntenseOral = isIntense(OralLabel)
-    String stimulationLabel = Apropos2Util.StimulationLabel(animation, Stage, pos)
-    String penisActionLabel = Apropos2Util.PenisActionLabel(animation, Stage, pos)
-    String endingLabel = Apropos2Util.EndingLabel(animation, Stage, pos)
-    If Config.TraceMessagesEnabled
-       Debug(">>Stage:" + Stage + ".Penetration:" + penetrationLabel + ".Oral:" + oralLabel + ".Stimul:" + stimulationLabel + ".Penis:" + penisActionLabel + ".Ending:" + endingLabel)
-    EndIf
     
-    if !isAnimationHentairimTaggedStrings(penetrationLabel, oralLabel, stimulationLabel, endingLabel, penisActionLabel)
-        Debug(">> No stage tags detected")
-        return
-    endif
 
     Bool isFisting = IsGettingInsertedBig(stimulationlabel)
     Bool isStimulated = IsGettingStimulated(stimulationlabel)
@@ -1971,9 +2113,17 @@ Function ProcessStageStartWT(SslThreadController thread, int Stage)
                     Else
                         receivingActorIndex = 0
                     EndIf
-                    penetrationLabel = Apropos2Util.PenetrationLabel(animation, Stage, receivingActorIndex)
-                    oralLabel = Apropos2Util.OralLabel(animation, Stage, receivingActorIndex)
-                    stimulationLabel = Apropos2Util.StimulationLabel(animation, Stage, receivingActorIndex)
+                    If !fromContact
+                        penetrationLabel = Apropos2Util.PenetrationLabel(animation, Stage, receivingActorIndex)
+                        oralLabel = Apropos2Util.OralLabel(animation, Stage, receivingActorIndex)
+                        stimulationLabel = Apropos2Util.StimulationLabel(animation, Stage, receivingActorIndex)
+                    ElseIf actorList[receivingActorIndex] != PlayerRef
+                        ; contact labels describe the player; here she wears the strap-on, so they
+                        ; say nothing about the actor receiving it
+                        penetrationLabel = "LDI"
+                        oralLabel = "LDI"
+                        stimulationLabel = "LDI"
+                    EndIf
                     Actor actorWithStrapOn = actorList[actorWithStrapOnIndex]
                     
                     Actor receivingActor = actorList[receivingActorIndex]
@@ -2045,6 +2195,7 @@ Function ProcessStageStartWT(SslThreadController thread, int Stage)
         ; TODO
     EndIf
 
+    return needUpdate
 EndFunction
 Function ProcessAnimEndWT(SslThreadController thread, int Stage) 
     SslBaseAnimation animation = thread.Animation
@@ -2087,9 +2238,18 @@ Function ProcessAnimEndWT(SslThreadController thread, int Stage)
     ;Debug(">> Anim: " + animation.Name + ".Position:" + pos +". Tags detected:" + ApUtil.GetTagsAsString(animation))
 
     Bool stageTagsFound = isAnimationHentairimTagged(animation, 1, pos)
-    if stageTagsFound && thread.HasPlayer
+    Bool slppHandled = false
+    If thread.HasPlayer
+        ; the scene is over: stop any contact poll still sampling its last stage
+        _slppPollToken += 1
+        ; W&T already applied per-stage from P+ collision data - consume the
+        ; marker so the generic fallback below doesn't double-apply damage
+        slppHandled = _slppWTHandled
+        _slppWTHandled = false
+    EndIf
+    if (stageTagsFound || slppHandled) && thread.HasPlayer
         If Config.TraceMessagesEnabled
-             Debug(">> Stage tags detected for pc. No action needed")
+             Debug(">> Stage tags or P+ detection handled W&T for pc. No action needed")
         EndIf
         return
     else

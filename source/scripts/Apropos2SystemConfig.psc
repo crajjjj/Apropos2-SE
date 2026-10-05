@@ -434,6 +434,9 @@ Bool Function CheckSystemComponent(String component)
         ;Return JContainers.APIVersion() == requiredJCAPIVersion && JContainers.featureVersion() >= minimumJCfeatureVersion
 		Return True
 
+    ElseIf component == "SexLabPP"
+        Return Apropos2SLPP.IsActive()
+
     ElseIf component == "SexLabAroused"
         Return GetSLA() != none
 

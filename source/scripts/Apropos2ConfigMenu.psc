@@ -1526,6 +1526,7 @@ EndState
 Function SystemCheckOptions()
     AddTextOptionST("CheckSKSE", "Skyrim Script Extender (1.7.3+)", StringIfElse(Config.CheckSystemComponent("SKSE"), "ok", "X"), OPTION_FLAG_DISABLED)
     AddTextOptionST("JContainers", "JContainers.dll SKSE Plugin  (3.2.5+)", StringIfElse(Config.CheckSystemComponent("JContainers"), "ok", "X"), OPTION_FLAG_DISABLED)
+    AddTextOptionST("SexLabPP", "SexLab P+ 2.19+ (optional)", StringIfElse(Config.CheckSystemComponent("SexLabPP"), "ok  v" + Apropos2SLPP.GetVersionString(), "--"), OPTION_FLAG_DISABLED)
     AddTextOptionST("SexLabAroused", "SexLabAroused.esm  (2.7)", StringIfElse(Config.CheckSystemComponent("SexLabAroused"), "ok", "X"), OPTION_FLAG_DISABLED)
     AddTextOptionST("Slavetats", "Slavetats  (1.1.1)", StringIfElse(Config.CheckSystemComponent("Slavetats"), "ok", "X"), OPTION_FLAG_DISABLED)
 EndFunction

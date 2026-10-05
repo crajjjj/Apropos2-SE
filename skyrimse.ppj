@@ -18,7 +18,14 @@
     </Variables>
     <Imports>
         <Import>.\Source\Scripts</Import>
-        <!-- <Import>C:\Playground\stubs</Import> -->
+        <!-- SexLab P+ sources MUST come before the classic SexLab sources so its
+             extended API (SexLabThread etc.) wins; classic import kept below as a
+             fallback for scripts P+ does not ship (e.g. PapyrusUtil) -->
+        <Import>C:\Playground\Skyrim\mods\build\SexLab Framework PPLUS - V2.19.0\Source\Scripts</Import>
+        <!-- P+ source dependencies: VRIK stub, UIExtensions, Lovense -->
+        <Import>C:\Playground\stubs</Import>
+        <Import>C:\Playground\Skyrim\mods\build\UIExtensions\scripts\source</Import>
+        <Import>C:\Playground\Skyrim\mods\build\SkyrimLovense-0.1.0\Source\Scripts</Import>
         <Import>C:\Playground\Skyrim\mods\build\FNIS Behavior SE 7.6\Data\source\scripts</Import>
         <Import>C:\Playground\Skyrim\mods\build\FNIS Sexy Move SE 7.2\Data\Source\Scripts</Import>
         <!--<Import>C:\Playground\Skyrim\mods\build\MfgConsole-44596-1-1\data\scripts\source</Import>-->
@@ -69,6 +76,8 @@
              <Match In="Apropos\db">*.txt</Match>
             <Match In="Scripts">*.pex</Match>
             <Match In="SKSE\Plugins\JCData\lua\apropos">*.lua</Match>
+            <!-- UBE-UV copies of the abuse textures; Apropos2ActorAlias switches to them for UBE races -->
+            <Match In="textures\actors\character\slavetats\Apropos2_UBE">*.dds</Match>
             <!--<Match In="SKSE\Plugins">*.dll</Match>-->
             <Match In="Interface">*</Match>
         </ZipFile>

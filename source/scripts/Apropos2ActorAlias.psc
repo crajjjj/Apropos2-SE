@@ -1204,6 +1204,9 @@ State Tracking
         If colorTint == -1 
             colorTint = Config.TatsColorTint
         EndIf
+        ; The map built below keeps the path that was actually applied, so the Remove*Textures
+        ; calls still match it after the swap.
+        texture = ResolveTattooTexture(anActor, texture)
         Int map = RetainedMap4Pair("name", name, "texture", texture, "section", section, "area", area)
         JMap.setInt(map, "color", colorTint)
         If Config.TraceMessagesEnabled
@@ -1465,6 +1468,39 @@ Int Function AddTattoo(Actor anActor, String name, String texture, String sectio
     Debug("Attempts to call AddTattoo while in empty state. Should be called in Tracking state")
     ; Specifically do nothing in the default state    
     Return -1
+EndFunction
+
+; UBE (Ultimate Body Enhancer) races have their own body and head UVs, so the stock abuse textures
+; land in the wrong place on them. Converted copies of every texture sit in a parallel folder,
+; slavetats\Apropos2_UBE, with the same sub-paths; all other races keep the stock path.
+String Function ResolveTattooTexture(Actor anActor, String texture)
+    If IsUbeActor(anActor)
+        String ubeTexture = "Apropos2_UBE\\" + texture
+        ; SlaveTats refuses a tattoo whose texture is not a loose file, so without the
+        ; UBE copy on disk the stock texture is the better result
+        If JContainers.fileExistsAtPath("Data\\Textures\\Actors\\Character\\slavetats\\" + ubeTexture)
+            Return ubeTexture
+        EndIf
+    EndIf
+    Return texture
+EndFunction
+
+; True when the actor's race comes from UBE_AllRace.esp. Tested by load-order index rather than by
+; listing the races, so new UBE races need no change here. The plugin must not be ESL-flagged
+; (it is not as shipped): a light plugin has no index of its own in the top byte.
+Bool Function IsUbeActor(Actor anActor)
+    If !anActor
+        Return False
+    EndIf
+    Int ubeIndex = Game.GetModByName("UBE_AllRace.esp")
+    If ubeIndex == 255
+        Return False
+    EndIf
+    Race actorRace = anActor.GetRace()
+    If !actorRace
+        Return False
+    EndIf
+    Return Math.LogicalAnd(Math.RightShift(actorRace.GetFormID(), 24), 0xFF) == ubeIndex
 EndFunction
 
 Function ApplyReducedVaginalWearAndTearAmount(Int amountApplied)

@@ -24,6 +24,7 @@ Key concepts a tester should keep in mind:
 | # | Use case | Steps | Expected |
 |---|----------|-------|----------|
 | 0.1 | Prereqs detected | Open MCM before install → **Install** page | SKSE 1.7.3+, JContainers 3.2.5+, SexLabAroused 2.7, SlaveTats 1.1.1 all show "ok" (SlaveTats optional) |
+| 0.5 | SexLab P+ detected | Install page, with SexLab P+ 2.19+ installed | "SexLab P+ 2.19+ (optional)" row shows "ok  v&lt;version&gt;"; shows "--" on classic SexLab (and everything else still works) |
 | 0.2 | Install runs | Click **Install / Update** | No CTD; page repopulates with the 9 config pages (General, Wear And Tear, …, Rebuild/Clean) |
 | 0.3 | Version shown | Check page title / Rebuild page | Displays current version string, matches the built version |
 | 0.4 | No integrity error | Install page | No "CRITICAL ERROR: File Integrity" banner |
@@ -62,6 +63,11 @@ Precondition: Wear And Tear → **Enable Wear And Tear** ON. Watch the player ro
 | 2.4 | Manual override | Wear And Tear Actors → set **Vaginal State** menu to e.g. 6 | State applies immediately; effects/textures update to match |
 | 2.5 | Male PC guard | With a male player character | Vaginal State menu is disabled/greyed (no vaginal W&T on male PC) |
 | 2.6 | Test button | Wear And Tear → **Test W&T on Player** | Player jumps to high W&T; effects + textures visibly apply |
+| 2.7 | P+ contact detection on untagged stages | On SexLab P+ 2.19+: run a scene whose animation has **no Hentairim stage tags** (most SLAL packs) | W&T rises during a stage once P+ reports the act in two samples in a row (debug log shows "P+ contact detection, stage N: ..."); at most one penetration, one oral and one stimulation application per stage; no double W&T at animation end |
+| 2.8 | No-tag anim without P+ 2.19 | Same untagged animation on classic SexLab or on SexLab P+ older than 2.19 | Behavior unchanged from previous builds (stage W&T skipped, generic anim-end W&T applies) |
+| 2.9 | Tagged anim on P+ | On SexLab P+ 2.19+: run a Hentairim-tagged animation | W&T comes from the stage tags exactly as on classic SexLab; no "P+ contact detection" lines for tagged stages |
+| 2.10 | UBE abuse textures | Actor of a UBE race (`UBE_AllRace.esp`), with the `Apropos2_UBE` texture set installed | Abuse textures line up with the UBE body (SlaveTats texture path starts with `Apropos2_UBE\`); a non-UBE actor in the same save keeps the stock set |
+| 2.11 | UBE without the texture set | UBE race, `textures\actors\character\slavetats\Apropos2_UBE` absent | Stock textures are applied (present, though not fitted to the UBE body); no missing-texture errors |
 
 ---
 
