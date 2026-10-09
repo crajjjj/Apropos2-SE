@@ -118,6 +118,14 @@ Event UpdateSystem(Int oldVersion, Int newVersion)
         GoToState("Updating")
         Version = newVersion
         
+        ; Settings that first appear in 1.0018 hold nothing meaningful in an older
+        ; save. Give them their defaults before the export below, which is read
+        ; straight back in after Setup and would otherwise carry them over.
+        If oldVersion < 10018
+            Config.SpeakDescriptions = True
+            Config.SpeakCooldown = 15.0
+        EndIf
+
         Config.ExportSettings()
 
         If oldVersion < Apropos2Util.GetVersion()

@@ -964,9 +964,55 @@ Function EventsAndMessages()
     AddKeyMapOptionST("PlayerDescriptionsHotKey", "Key to Generate Player Messages", PlayerDescriptions.PlayerDescriptionsHotKey, OPTION_FLAG_WITH_UNMAP)
     AddSliderOptionST("MinArousalForHugeLoad", "Min Arousal for huge load", Config.MinArousalForHugeLoad, "{0}")
     AddSliderOptionST("MinArousalForLargeLoad", "Min Arousal for Large load", Config.MinArousalForLargeLoad, "{0}")
+
+    AddEmptyOption()
+    AddHeaderOption("Spoken Descriptions")
+    AddTextOptionST("SpeechPlugin", "AudioUtilTTS (optional)", StringIfElse(SKSE.GetPluginVersion("AudioUtilTTS") >= 0, "found", "not installed"), OPTION_FLAG_DISABLED)
+    AddToggleOptionST("SpeakDescriptions", "Speak Descriptions", Config.SpeakDescriptions)
+    AddSliderOptionST("SpeakCooldown", "Seconds Between Spoken Lines", Config.SpeakCooldown, "{0} s")
     SetCursorPosition(1)
     DefineMCMParagraph("To disable Huge or Large load messages, set MinArousalForHugeLoad / MinArousalForLargeLoad to 0.")
 EndFunction
+
+State SpeechPlugin
+    Event OnHighlightST()
+        SetInfoText("Spoken descriptions need the AudioUtilTTS mod. Without it the two settings below do nothing. The voice itself is chosen in AudioUtilTTS.")
+    EndEvent
+EndState
+
+State SpeakDescriptions
+    Event OnSelectST()
+        Config.SpeakDescriptions = !Config.SpeakDescriptions
+        SetToggleOptionValueST(Config.SpeakDescriptions)
+    EndEvent
+    Event OnDefaultST()
+        Config.SpeakDescriptions = True
+        SetToggleOptionValueST(Config.SpeakDescriptions)
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Read the descriptions of a scene with the player aloud. All descriptions are still shown as text either way.")
+    EndEvent
+EndState
+
+State SpeakCooldown
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(Config.SpeakCooldown)
+        SetSliderDialogRange(0, 120)
+        SetSliderDialogInterval(5)
+        SetSliderDialogDefaultValue(15)
+    EndEvent
+    Event OnSliderAcceptST(Float value)
+        Config.SpeakCooldown = value
+        SetSliderOptionValueST(Config.SpeakCooldown, "{0} s")
+    EndEvent
+    Event OnDefaultST()
+        Config.SpeakCooldown = 15.0
+        SetSliderOptionValueST(Config.SpeakCooldown, "{0} s")
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Least time between two spoken descriptions. A stage brings several messages; only the first one after this pause is spoken. Raise it for less talking. 0 speaks every description.")
+    EndEvent
+EndState
 
 State MinArousalForLargeLoad
     Event OnSliderOpenST()

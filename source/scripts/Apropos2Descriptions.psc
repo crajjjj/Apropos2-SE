@@ -25,11 +25,6 @@ Float _slppSceneStartedAt = 0.0
 ; see SpeakMessage.
 Float _lastSpokenAt = 0.0
 
-; Least seconds between two spoken lines. A stage brings two to four messages;
-; read aloud back to back they filled half of a scene, so only the first one
-; after this pause is spoken. Every message is still shown on screen.
-Float Property SpeakCooldown = 15.0 AutoReadOnly
-
 Function Setup()
     Parent.Setup()
     Log("Setup")
@@ -178,8 +173,16 @@ EndFunction
 ; Hands a player-scene description to AudioUtilTTS, an optional mod that speaks
 ; it aloud. A plain mod event, so there is no dependency: without AudioUtilTTS
 ; the event goes nowhere. A leading "(Name)" speaker tag is for the eye only and
-; is not read out. At most one line per SpeakCooldown seconds is sent.
+; is not read out.
+; Config.SpeakDescriptions switches this off. Config.SpeakCooldown spaces the
+; lines out: a stage brings two to four messages, and read aloud back to back
+; they filled half of a scene, so only the first one after that many seconds is
+; spoken. Every message is still shown on screen.
 Function SpeakMessage(String msg)
+    If !Config.SpeakDescriptions
+        Return
+    EndIf
+
     String spoken = msg
     If StringUtil.GetNthChar(spoken, 0) == "("
         Int tagEnd = StringUtil.Find(spoken, ")")
@@ -193,8 +196,9 @@ Function SpeakMessage(String msg)
 
     ; The real-time clock restarts with the game, so a time kept in an older save
     ; can lie in the future: that counts as long ago.
+    Float cooldown = Config.SpeakCooldown
     Float now = Utility.GetCurrentRealTime()
-    If now >= _lastSpokenAt && now - _lastSpokenAt < SpeakCooldown
+    If now >= _lastSpokenAt && now - _lastSpokenAt < cooldown
         Return
     EndIf
     _lastSpokenAt = now

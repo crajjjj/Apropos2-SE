@@ -47,6 +47,10 @@ Precondition: MCM → Events And Messages → **Show Descriptions** ON. Have a S
 | 1.7 | 3rd person voice | Set Person = 3rd | Text reads by name / "she / her …" |
 | 1.8 | Descriptions OFF | Turn **Show Descriptions** OFF, run a scene | No description text appears |
 | 1.9 | Creature scene | Run a creature animation | Description picks a creature-appropriate partner/phrasing, no error |
+| 1.10 | Spoken descriptions | With AudioUtilTTS installed, run a player scene | A description is read aloud about two seconds after it appears; Events And Messages shows "AudioUtilTTS (optional): found" |
+| 1.11 | Spacing | Leave **Seconds Between Spoken Lines** at 15, run a scene | At most one line is spoken per 15 seconds; every description still appears as text |
+| 1.12 | Speech OFF | Turn **Speak Descriptions** OFF, run a scene | Nothing is spoken; text is unchanged |
+| 1.13 | Without AudioUtilTTS | Remove AudioUtilTTS, run a scene | Nothing is spoken, no errors; the row shows "not installed" |
 
 ---
 

@@ -75,6 +75,12 @@ Bool Property ShowAnimationChangeMessages = True Auto Hidden
 Bool Property ShowAllStageMessages = True Auto Hidden
 Bool Property ShowHugeLargeLoadMessages = True Auto Hidden
 
+; Spoken descriptions, through the optional AudioUtilTTS mod (see
+; Apropos2Descriptions.SpeakMessage). SpeakCooldown is the least number of
+; seconds between two spoken lines; 0 speaks every description.
+Bool Property SpeakDescriptions = True Auto Hidden
+Float Property SpeakCooldown = 15.0 Auto Hidden
+
 ; @DEPRECRATED
 Bool Property EnableAnimationChange = True Auto Hidden
 ;
@@ -538,6 +544,9 @@ Function SetDefaults()
     ShowAllStageMessages = True
     ShowHugeLargeLoadMessages = True
 
+    SpeakDescriptions = True
+    SpeakCooldown = 15.0
+
     WidgetHorizontalAnchor = Widgets.DefaultHorizontalAnchor
     WidgetHorizontalOffset = Widgets.DefaultHorizontalOffset
     WidgetVerticalAnchor   = Widgets.DefaultVerticalAnchor
@@ -675,6 +684,9 @@ Bool Function ExportSettings()
     JMap.setInt(exportMapId, "ShowVirginityLostMessages", ShowVirginityLostMessages As Int)
     JMap.setInt(exportMapId, "ShowWTChangedMessages", ShowWTChangedMessages As Int)
 
+    JMap.setInt(exportMapId, "SpeakDescriptions", SpeakDescriptions As Int)
+    JMap.setFlt(exportMapId, "SpeakCooldown", SpeakCooldown)
+
     JMap.setInt(exportMapId, "ShowAnimationStartMessages", ShowAnimationStartMessages As Int)
     JMap.setInt(exportMapId, "ShowAnimationChangeMessages", ShowAnimationChangeMessages As Int)
     JMap.setInt(exportMapId, "ShowAllStageMessages", ShowAllStageMessages As Int)
@@ -768,6 +780,10 @@ Bool Function ImportSettings()
     ShowSexDescriptions = JMap.getInt(importMapId, "ShowSexDescriptions") As Bool
     ShowVirginityLostMessages = JMap.getInt(importMapId, "ShowVirginityLostMessages") As Bool
     ShowWTChangedMessages = JMap.getInt(importMapId, "ShowWTChangedMessages") As Bool
+
+    ; a settings file exported before 1.0018 has neither key: keep the defaults
+    SpeakDescriptions = JMap.getInt(importMapId, "SpeakDescriptions", 1) As Bool
+    SpeakCooldown = JMap.getFlt(importMapId, "SpeakCooldown", 15.0)
 
     ShowAnimationStartMessages = JMap.getInt(importMapId, "ShowAnimationStartMessages") As Bool
     ShowAnimationChangeMessages = JMap.getInt(importMapId, "ShowAnimationChangeMessages") As Bool
