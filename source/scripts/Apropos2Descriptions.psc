@@ -157,12 +157,30 @@ Function PresentMessage(String msg, SslThreadController thread = None)
     If thread
         If hasPlayer
             Widgets.DisplayPlayerDescriptionMessage(msg)
+            SpeakMessage(msg)
         Else
             Widgets.EnqueueDescriptionMessage(msg, section="NPC")
         EndIf
     Else
         Widgets.EnqueueDescriptionMessage(msg, section="MISC")
     EndIf   
+EndFunction
+
+; Hands a player-scene description to AudioUtilTTS, an optional mod that speaks
+; it aloud. A plain mod event, so there is no dependency: without AudioUtilTTS
+; the event goes nowhere. A leading "(Name)" speaker tag is for the eye only and
+; is not read out.
+Function SpeakMessage(String msg)
+    String spoken = msg
+    If StringUtil.GetNthChar(spoken, 0) == "("
+        Int tagEnd = StringUtil.Find(spoken, ")")
+        If tagEnd > 0
+            spoken = StringUtil.Substring(spoken, tagEnd + 1)
+        EndIf
+    EndIf
+    If spoken
+        SendModEvent("AudioUtilTTS_Speak", spoken)
+    EndIf
 EndFunction
 
 Function DisplayMaleActorMasturbationMessage(SslThreadController thread, Actor maleActor, String effectiveVoice, Bool isOrgasm, Int stage = 0)
