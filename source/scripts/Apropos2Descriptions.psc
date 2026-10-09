@@ -21,6 +21,15 @@ Int _slppPollToken = 0
 ; different scene.
 Float _slppSceneStartedAt = 0.0
 
+; Utility.GetCurrentRealTime() at which a line was last handed to AudioUtilTTS;
+; see SpeakMessage.
+Float _lastSpokenAt = 0.0
+
+; Least seconds between two spoken lines. A stage brings two to four messages;
+; read aloud back to back they filled half of a scene, so only the first one
+; after this pause is spoken. Every message is still shown on screen.
+Float Property SpeakCooldown = 15.0 AutoReadOnly
+
 Function Setup()
     Parent.Setup()
     Log("Setup")
@@ -169,7 +178,7 @@ EndFunction
 ; Hands a player-scene description to AudioUtilTTS, an optional mod that speaks
 ; it aloud. A plain mod event, so there is no dependency: without AudioUtilTTS
 ; the event goes nowhere. A leading "(Name)" speaker tag is for the eye only and
-; is not read out.
+; is not read out. At most one line per SpeakCooldown seconds is sent.
 Function SpeakMessage(String msg)
     String spoken = msg
     If StringUtil.GetNthChar(spoken, 0) == "("
@@ -178,9 +187,18 @@ Function SpeakMessage(String msg)
             spoken = StringUtil.Substring(spoken, tagEnd + 1)
         EndIf
     EndIf
-    If spoken
-        SendModEvent("AudioUtilTTS_Speak", spoken)
+    If !spoken
+        Return
     EndIf
+
+    ; The real-time clock restarts with the game, so a time kept in an older save
+    ; can lie in the future: that counts as long ago.
+    Float now = Utility.GetCurrentRealTime()
+    If now >= _lastSpokenAt && now - _lastSpokenAt < SpeakCooldown
+        Return
+    EndIf
+    _lastSpokenAt = now
+    SendModEvent("AudioUtilTTS_Speak", spoken)
 EndFunction
 
 Function DisplayMaleActorMasturbationMessage(SslThreadController thread, Actor maleActor, String effectiveVoice, Bool isOrgasm, Int stage = 0)
