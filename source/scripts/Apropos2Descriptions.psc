@@ -174,7 +174,9 @@ EndFunction
 ; it aloud. A plain mod event, so there is no dependency: without AudioUtilTTS
 ; the event goes nowhere. A leading "(Name)" speaker tag is for the eye only and
 ; is not read out.
-; Config.SpeakDescriptions switches this off. Config.SpeakCooldown spaces the
+; Config.SpeakDescriptions switches this off. Config.SpeakNpcLines off leaves
+; out the lines tagged with a speaker other than the player; such a line does
+; not use up the pause below. Config.SpeakCooldown spaces the
 ; lines out: a stage brings two to four messages, and read aloud back to back
 ; they filled half of a scene, so only the first one after that many seconds is
 ; spoken. Every message is still shown on screen.
@@ -187,6 +189,9 @@ Function SpeakMessage(String msg)
     If StringUtil.GetNthChar(spoken, 0) == "("
         Int tagEnd = StringUtil.Find(spoken, ")")
         If tagEnd > 0
+            If tagEnd > 1 && !Config.SpeakNpcLines && IsNpcSpeakerTag(StringUtil.Substring(spoken, 1, tagEnd - 1))
+                Return
+            EndIf
             spoken = StringUtil.Substring(spoken, tagEnd + 1)
         EndIf
     EndIf
@@ -203,6 +208,20 @@ Function SpeakMessage(String msg)
     EndIf
     _lastSpokenAt = now
     SendModEvent("AudioUtilTTS_Speak", spoken)
+EndFunction
+
+; True when the text of a leading "(...)" tag names a speaker other than the
+; player. The databases open a quoted line with its speaker: "({PRIMARY})" or
+; "({ACTIVE})", a name by the time the line gets here, or a fixed role such as
+; "(Men)" or "(Rapist)". A few lines open with a sound instead, "(gasp) ...".
+; That is no speaker, the words after it are the primary actor's own, so such a
+; line is always spoken. The six below are every sound the stock database and
+; DB Update 0.6.22 open a line with.
+Bool Function IsNpcSpeakerTag(String tag)
+    If tag == PlayerRef.GetDisplayName()
+        Return False
+    EndIf
+    Return tag != "gasp" && tag != "sob" && tag != "gulp" && tag != "giggle" && tag != "pant" && tag != "sniff"
 EndFunction
 
 Function DisplayMaleActorMasturbationMessage(SslThreadController thread, Actor maleActor, String effectiveVoice, Bool isOrgasm, Int stage = 0)

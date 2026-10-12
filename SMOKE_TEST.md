@@ -51,6 +51,7 @@ Precondition: MCM → Events And Messages → **Show Descriptions** ON. Have a S
 | 1.11 | Spacing | Leave **Seconds Between Spoken Lines** at 15, run a scene | At most one line is spoken per 15 seconds; every description still appears as text |
 | 1.12 | Speech OFF | Turn **Speak Descriptions** OFF, run a scene | Nothing is spoken; text is unchanged |
 | 1.13 | Without AudioUtilTTS | Remove AudioUtilTTS, run a scene | Nothing is spoken, no errors; the row shows "not installed" |
+| 1.14 | NPC lines OFF | Turn **Speak NPC Lines** OFF, set **Seconds Between Spoken Lines** to 0, run a scene | Lines shown as "(partner's name) ..." or "(Men) ..." stay silent; narration and "(player's name) ..." lines are spoken; text is unchanged |
 
 ---
 

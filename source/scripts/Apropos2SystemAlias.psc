@@ -125,6 +125,10 @@ Event UpdateSystem(Int oldVersion, Int newVersion)
             Config.SpeakDescriptions = True
             Config.SpeakCooldown = 15.0
         EndIf
+        ; The same for the setting 1.0019 adds.
+        If oldVersion < 10019
+            Config.SpeakNpcLines = True
+        EndIf
 
         Config.ExportSettings()
 

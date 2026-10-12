@@ -969,6 +969,7 @@ Function EventsAndMessages()
     AddHeaderOption("Spoken Descriptions")
     AddTextOptionST("SpeechPlugin", "AudioUtilTTS (optional)", StringIfElse(SKSE.GetPluginVersion("AudioUtilTTS") >= 0, "found", "not installed"), OPTION_FLAG_DISABLED)
     AddToggleOptionST("SpeakDescriptions", "Speak Descriptions", Config.SpeakDescriptions)
+    AddToggleOptionST("SpeakNpcLines", "Speak NPC Lines", Config.SpeakNpcLines)
     AddSliderOptionST("SpeakCooldown", "Seconds Between Spoken Lines", Config.SpeakCooldown, "{0} s")
     SetCursorPosition(1)
     DefineMCMParagraph("To disable Huge or Large load messages, set MinArousalForHugeLoad / MinArousalForLargeLoad to 0.")
@@ -976,7 +977,7 @@ EndFunction
 
 State SpeechPlugin
     Event OnHighlightST()
-        SetInfoText("Spoken descriptions need the AudioUtilTTS mod. Without it the two settings below do nothing. The voice itself is chosen in AudioUtilTTS.")
+        SetInfoText("Spoken descriptions need the AudioUtilTTS mod. Without it the settings below do nothing. The voice itself is chosen in AudioUtilTTS.")
     EndEvent
 EndState
 
@@ -991,6 +992,20 @@ State SpeakDescriptions
     EndEvent
     Event OnHighlightST()
         SetInfoText("Read the descriptions of a scene with the player aloud. All descriptions are still shown as text either way.")
+    EndEvent
+EndState
+
+State SpeakNpcLines
+    Event OnSelectST()
+        Config.SpeakNpcLines = !Config.SpeakNpcLines
+        SetToggleOptionValueST(Config.SpeakNpcLines)
+    EndEvent
+    Event OnDefaultST()
+        Config.SpeakNpcLines = True
+        SetToggleOptionValueST(Config.SpeakNpcLines)
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Also read aloud the lines another character says, the ones shown with a name in brackets such as (Lydia) or (Men). Off: only the narration and the player's own lines are spoken. Needs Speak Descriptions. All lines are still shown as text either way.")
     EndEvent
 EndState
 
