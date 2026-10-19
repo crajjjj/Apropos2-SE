@@ -131,7 +131,9 @@ Function OverrideVaginalWearTearState(Int newValue, Bool updateAbuse, Bool updat
     If Config.DebugMessagesEnabled
         Log("Overriding VaginalWearTearState to " + newValue)
     EndIf
+    Int oldState = _vaginalState
     _vaginalState = newValue
+    SendWearTearStateChanged(GetActor(), "Vaginal", oldState, newValue)
     ; make sure we update the wear tear amount inferred from state.
     Int wearTearAmount = MapWearTearStateToAmount(newValue)
     _vaginalWearTear = wearTearAmount
@@ -163,7 +165,9 @@ Function OverrideAnalWearTearState(Int newValue, Bool updateAbuse, Bool updateCr
     If Config.DebugMessagesEnabled 
         Log("Overriding AnalWearTearState to " + newValue)
     EndIf
+    Int oldState = _analState
     _analState = newValue
+    SendWearTearStateChanged(GetActor(), "Anal", oldState, newValue)
     ; make sure we update the wear tear amount inferred from state.
     Int inferredAmount = MapWearTearStateToAmount(newValue)      
     _analWearTear = inferredAmount
@@ -195,7 +199,9 @@ Function OverrideOralWearTearState(Int newValue, Bool updateAbuse, Bool updateCr
     If Config.DebugMessagesEnabled
         Log("Overriding OralWearTearState to " + newValue)
     EndIf
+    Int oldState = _oralState
     _oralState = newValue
+    SendWearTearStateChanged(GetActor(), "Oral", oldState, newValue)
     ; make sure we update the wear tear amount inferred from state.
     Int inferredAmount = MapWearTearStateToAmount(newValue)   
     _oralWearTear = inferredAmount     
@@ -900,6 +906,7 @@ State Tracking
         _vaginalState = Apropos2Util.MapWearTearAmountToState(_vaginalWearTear)
         
         LogWearTearChange("vaginal", _vaginalWearTear, _vaginalState)
+        SendWearTearStateChanged(GetActor(), "Vaginal", oldWearAndTearState, _vaginalState)
 
         Int change = _vaginalState - oldWearAndTearState
 
@@ -953,6 +960,7 @@ State Tracking
         _vaginalWearTear = CalculateReducedWearTearValue(amountApplied, _vaginalWearTear)
         _vaginalState = Apropos2Util.MapWearTearAmountToState(_vaginalWearTear)
         LogWearTearChange("vaginal", _vaginalWearTear, _vaginalState)
+        SendWearTearStateChanged(GetActor(), "Vaginal", oldWearAndTearState, _vaginalState)
 
         Int change = _vaginalState - oldWearAndTearState
 
@@ -1004,6 +1012,7 @@ State Tracking
         _analState = Apropos2Util.MapWearTearAmountToState(_analWearTear)
         
         LogWearTearChange("anal", _analWearTear, _analState)
+        SendWearTearStateChanged(GetActor(), "Anal", oldWearAndTearState, _analState)
 
         Int change = _analState - oldWearAndTearState
 
@@ -1055,6 +1064,7 @@ State Tracking
         _analWearTear = CalculateReducedWearTearValue(amountApplied, _analWearTear)
         _analState = Apropos2Util.MapWearTearAmountToState(_analWearTear)
         LogWearTearChange("anal", _analWearTear, _analState)  
+        SendWearTearStateChanged(GetActor(), "Anal", oldWearAndTearState, _analState)
 
         Int change = _analState - oldWearAndTearState
 
@@ -1106,6 +1116,7 @@ State Tracking
         _oralState = Apropos2Util.MapWearTearAmountToState(_oralWearTear)
         
         LogWearTearChange("oral", _oralWearTear, _oralState)
+        SendWearTearStateChanged(GetActor(), "Oral", oldWearAndTearState, _oralState)
 
         Int change = _oralState - oldWearAndTearState
 
@@ -1158,6 +1169,7 @@ State Tracking
         _oralWearTear = CalculateReducedWearTearValue(amountApplied, _oralWearTear)
         _oralState = Apropos2Util.MapWearTearAmountToState(_oralWearTear)
         LogWearTearChange("oral", _oralWearTear, _oralState)  
+        SendWearTearStateChanged(GetActor(), "Oral", oldWearAndTearState, _oralState)
 
         Int change = _oralState - oldWearAndTearState
 
@@ -1285,6 +1297,9 @@ State ClearTracking
             RemoveAllAbuseTextures(anActor, True)
             DispellAllSpells(anActor)
 			ClearWTMorphs()
+            SendWearTearStateChanged(anActor, "Oral", _oralState, 0)
+            SendWearTearStateChanged(anActor, "Anal", _analState, 0)
+            SendWearTearStateChanged(anActor, "Vaginal", _vaginalState, 0)
         EndIf
 
         _oralState = 0
@@ -1352,6 +1367,17 @@ Function LogWearTearChange(String type, Int wearTearValue, Int wearTearState)
     If Config.DebugMessagesEnabled
         LogActor(ActorRef, type + " Wear & Tear = " + wearTearValue + " (value) " + wearTearState + " (state)")
     EndIf  
+EndFunction
+
+; Tells other mods that a body part's wear and tear stage changed, so a HUD
+; (SL Widgets) can follow it at once instead of polling the stage properties.
+; Sent from the actor: sender = the actor, strArg = "Vaginal" / "Anal" /
+; "Oral", numArg = the new stage, the value of that body part's
+; ...WearTearState property. Only on a real change.
+Function SendWearTearStateChanged(Actor anActor, String bodyPart, Int oldState, Int newState)
+    If anActor && oldState != newState
+        anActor.SendModEvent("Apropos2WearTearChanged", bodyPart, newState as Float)
+    EndIf
 EndFunction
 
 Function SendDisplayWearAndTearChangeEvent(String change, Actor anActor, String effectiveVoice, String bodyPart)

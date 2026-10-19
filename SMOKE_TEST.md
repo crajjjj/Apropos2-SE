@@ -73,6 +73,7 @@ Precondition: Wear And Tear → **Enable Wear And Tear** ON. Watch the player ro
 | 2.9 | Tagged anim on P+ | On SexLab P+ 2.19+: run a Hentairim-tagged animation | W&T comes from the stage tags exactly as on classic SexLab; no "P+ contact detection" lines for tagged stages |
 | 2.10 | UBE abuse textures | Actor of a UBE race (`UBE_AllRace.esp`), with the `Apropos2_UBE` texture set installed | Abuse textures line up with the UBE body (SlaveTats texture path starts with `Apropos2_UBE\`); a non-UBE actor in the same save keeps the stock set |
 | 2.11 | UBE without the texture set | UBE race, `textures\actors\character\slavetats\Apropos2_UBE` absent | Stock textures are applied (present, though not fitted to the UBE body); no missing-texture errors |
+| 2.12 | W&T change event (1.0020) | With SL Widgets 2.3.0+ (W&T meter or icons on), complete a scene that raises a stage; then set a stage in **Wear And Tear Actors**; then let it heal a stage | Each stage change sends `Apropos2WearTearChanged` (sender = the actor, strArg = Vaginal / Anal / Oral, numArg = the new stage): the SL Widgets meter or icon moves within about a second of the change, not on its next poll. No event when the stage stays the same |
 
 ---
 
