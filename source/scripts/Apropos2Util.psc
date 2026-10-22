@@ -4,7 +4,7 @@ ScriptName Apropos2Util hidden
 Import ApUtil
 
 Int Function GetVersion() Global
-    Return 10020
+    Return 10021
     ; 1.0   -> 10000
     ; 1.1   -> 11000
     ; 1.1b  -> 11001
@@ -13,7 +13,7 @@ Int Function GetVersion() Global
 EndFunction
 
 String Function GetVersionString() Global
-    Return "1.0020"
+    Return "1.0021"
 EndFunction
 
 Apropos2Framework Function GetAPI() Global
