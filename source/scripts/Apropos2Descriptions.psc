@@ -236,7 +236,9 @@ Function DisplayMaleActorMasturbationMessage(SslThreadController thread, Actor m
         Log("DisplayMaleActorMasturbationMessage: " + animation + "," + maleName + "," + effectiveVoice + "," + StringIfElse(isOrgasm, "Orgasm"))
     EndIf
 
-    Int mapId = JValue.retain(GenerateStandardTokenMap(maleName), tag=MODNAME)
+    ; a solo scene has no second actor: the active participant is the primary, so
+    ; {ACTIVE} gets the same name (the stock male masturbation lines use it)
+    Int mapId = JValue.retain(GenerateStandardTokenMap(maleName, maleName), tag=MODNAME)
 
     AddMaleArousalTextsToMap(mapId, maleActor)
     String tokenizedDescription = Database.RetrieveMaleMasturbationDescription(animation, isOrgasm, effectiveVoice, stage)
@@ -261,7 +263,8 @@ Function DisplayFemaleActorMasturbationMessage(SslThreadController thread, Actor
         Log("DisplayFemaleActorMasturbationMessage:" + animation + "," + primaryFemaleName + "," + effectiveVoice + "," + StringIfElse(isOrgasm, "Orgasm"))
     EndIf
 
-    Int mapId = JValue.retain(GenerateVaginalTokenMap(primaryFemaleActor), tag=MODNAME)
+    ; solo scene: {ACTIVE} is the primary herself
+    Int mapId = JValue.retain(GenerateVaginalTokenMap(primaryFemaleActor, primaryFemaleActor), tag=MODNAME)
     AddArousalTextsToMap(mapId, primaryFemaleActor)
     String tokenizedDescription = Database.RetrieveFemaleMasturbationDescription(animation, isOrgasm, effectiveVoice, stage)
        
