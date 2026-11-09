@@ -330,20 +330,27 @@ Function WearAndTear()
 
     SetCursorPosition(1)
 
-    AddHeaderOption("<font color='#FF9900'>Tats for W&T 'Abuse' - Slavetats req.</font>")
+    AddHeaderOption("<font color='#FF9900'>Tats for W&T 'Abuse' - Slavetats / Lacrima</font>")
 
     Bool slaveTatsPresent = Config.CheckSystemComponent("Slavetats")
+    Bool lacrimaPresent = Config.CheckSystemComponent("Lacrima")
     Int svlFlag = IntIfElse(slaveTatsPresent, OPTION_FLAG_NONE, OPTION_FLAG_DISABLED)
+    ; tears and mascara come from Lacrima as well, with no Slavetats needed
+    Int tearsFlag = IntIfElse(slaveTatsPresent || lacrimaPresent, OPTION_FLAG_NONE, OPTION_FLAG_DISABLED)
+    Int lacrimaFlag = IntIfElse(lacrimaPresent, OPTION_FLAG_NONE, OPTION_FLAG_DISABLED)
 
     AddTextOption("<font color='#FFCC66'>Slavetats Mod status</font>", StringIfElse(slaveTatsPresent, "Found Slavetats", "Did not find Slavetats"))
-    AddToggleOptionST("EnableSkinTextures", "$APR_EnableSkinTextures", Config.EnableSkinTextures, svlFlag)
+    AddTextOption("<font color='#FFCC66'>Lacrima Mod status</font>", StringIfElse(lacrimaPresent, "Found Lacrima", "Did not find Lacrima"))
+    AddToggleOptionST("EnableSkinTextures", "$APR_EnableSkinTextures", Config.EnableSkinTextures, tearsFlag)
     AddToggleOptionST("EnableAfterEffects", "$APR_EnableAfterEffects", Config.EnableAfterEffects, svlFlag)
     AddToggleOptionST("EnableCutScratches", "$APR_EnableCutScratches", Config.EnableCutScratches, svlFlag)
     AddToggleOptionST("EnableDaedricScars", "$APR_EnableDaedricScars", Config.EnableDaedricScars, svlFlag)
-    AddToggleOptionST("EnableTearsAndSobs", "$APR_EnableTearsAndSobs", Config.EnableTearsAndSobs, svlFlag)
-    AddToggleOptionST("EnableMascaraSmears", "$APR_EnableMascaraSmears", Config.EnableMascaraSmears, svlFlag)
+    AddToggleOptionST("EnableTearsAndSobs", "$APR_EnableTearsAndSobs", Config.EnableTearsAndSobs, tearsFlag)
+    AddToggleOptionST("EnableMascaraSmears", "$APR_EnableMascaraSmears", Config.EnableMascaraSmears, tearsFlag)
     AddColorOptionST("TatsColorTint", "$APR_TatsColorTint", Config.TatsColorTint, svlFlag)
     AddColorOptionST("MascaraTatsColorTint", "$APR_MascaraTatsColorTint", Config.MascaraTatsColorTint, svlFlag)
+    AddToggleOptionST("UseLacrimaTears", "$APR_UseLacrimaTears", Config.UseLacrimaTears, lacrimaFlag)
+    AddSliderOptionST("LacrimaCrySeconds", "$APR_LacrimaCrySeconds", Config.LacrimaCrySeconds, "{0} s", lacrimaFlag)
 EndFunction
 
 State TearWTPlayer
@@ -721,6 +728,40 @@ State EnableMascaraSmears
     Event OnHighlightST()
         SetInfoText("$APR_InfoEnableMascaraSmears")
     EndEvent      
+EndState
+
+State UseLacrimaTears
+    Event OnSelectST()
+        Config.UseLacrimaTears = !Config.UseLacrimaTears
+        SetToggleOptionValueST(Config.UseLacrimaTears)
+    EndEvent
+    Event OnDefaultST()
+        Config.UseLacrimaTears = True
+        SetToggleOptionValueST(Config.UseLacrimaTears)
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("$APR_InfoUseLacrimaTears")
+    EndEvent
+EndState
+
+State LacrimaCrySeconds
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(Config.LacrimaCrySeconds)
+        SetSliderDialogRange(10, 300)
+        SetSliderDialogInterval(5)
+        SetSliderDialogDefaultValue(60)
+    EndEvent
+    Event OnSliderAcceptST(Float value)
+        Config.LacrimaCrySeconds = value
+        SetSliderOptionValueST(Config.LacrimaCrySeconds, "{0} s")
+    EndEvent
+    Event OnDefaultST()
+        Config.LacrimaCrySeconds = 60.0
+        SetSliderOptionValueST(Config.LacrimaCrySeconds, "{0} s")
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("$APR_InfoLacrimaCrySeconds")
+    EndEvent
 EndState
 
 Function WearAndTearActors()
@@ -1590,6 +1631,7 @@ Function SystemCheckOptions()
     AddTextOptionST("SexLabPP", "SexLab P+ 2.19+ (optional)", StringIfElse(Config.CheckSystemComponent("SexLabPP"), "ok  v" + Apropos2SLPP.GetVersionString(), "--"), OPTION_FLAG_DISABLED)
     AddTextOptionST("SexLabAroused", "SexLabAroused.esm  (2.7)", StringIfElse(Config.CheckSystemComponent("SexLabAroused"), "ok", "X"), OPTION_FLAG_DISABLED)
     AddTextOptionST("Slavetats", "Slavetats  (1.1.1)", StringIfElse(Config.CheckSystemComponent("Slavetats"), "ok", "X"), OPTION_FLAG_DISABLED)
+    AddTextOptionST("Lacrima", "Lacrima 0.2+ (optional, tears)", StringIfElse(Config.CheckSystemComponent("Lacrima"), "ok", "--"), OPTION_FLAG_DISABLED)
 EndFunction
 
 State InstallSystem

@@ -61,6 +61,13 @@ Bool Property EnableDaedricScars = True Auto Hidden
 Bool Property EnableTearsAndSobs = True Auto Hidden
 Bool Property EnableMascaraSmears = True Auto Hidden
 
+; Lacrima (optional, an SKSE plugin): with it installed and UseLacrimaTears on, the
+; 'Tears & Sobs' and 'Mascara Smears' levels make the character cry real tears after an
+; abusive scene instead of putting Slavetats textures on the face. LacrimaCrySeconds is
+; how long the crying lasts at the highest abuse level; lower levels cry for less.
+Bool Property UseLacrimaTears = True Auto Hidden
+Float Property LacrimaCrySeconds = 60.0 Auto Hidden
+
 String Property NarrativeMode Auto Hidden
 String Property PeriodicPlayerDescriptionsOption = "Timed msg" Auto Hidden
 
@@ -451,9 +458,19 @@ Bool Function CheckSystemComponent(String component)
     ElseIf component == "Slavetats"
         Return Game.GetModByName("Slavetats.esp") != 255
 
+    ElseIf component == "Lacrima"
+        ; the tears plugin, 0.2 or later (the first with CryEx); -1 when it is not loaded
+        Return SKSE.GetPluginVersion("Lacrima") >= 0x00020000
+
     EndIf
     
     Return False
+EndFunction
+
+; True when the tears and mascara levels go to Lacrima: the player wants it and the
+; plugin is loaded.
+Bool Function UseLacrima()
+    Return UseLacrimaTears && CheckSystemComponent("Lacrima")
 EndFunction
 
 Bool Function CheckSystem()
@@ -534,6 +551,8 @@ Function SetDefaults()
     EnableDaedricScars = True
     EnableTearsAndSobs = True
     EnableMascaraSmears = True
+    UseLacrimaTears = True
+    LacrimaCrySeconds = 60.0
 
     NarrativeMode = "2nd Person"
     PeriodicPlayerDescriptionsOption = "Timed msg"
@@ -679,6 +698,8 @@ Bool Function ExportSettings()
     JMap.setInt(exportMapId, "EnableDaedricScars", EnableDaedricScars As Int)
     JMap.setInt(exportMapId, "EnableTearsAndSobs", EnableTearsAndSobs As Int)
     JMap.setInt(exportMapId, "EnableMascaraSmears", EnableMascaraSmears As Int)
+    JMap.setInt(exportMapId, "UseLacrimaTears", UseLacrimaTears As Int)
+    JMap.setFlt(exportMapId, "LacrimaCrySeconds", LacrimaCrySeconds)
 
     JMap.setStr(exportMapId, "NarrativeMode", NarrativeMode)
     JMap.setStr(exportMapId, "PeriodicPlayerDescriptionsOption", PeriodicPlayerDescriptionsOption)
@@ -777,6 +798,8 @@ Bool Function ImportSettings()
     EnableDaedricScars = JMap.getInt(importMapId, "EnableDaedricScars") As Bool
     EnableTearsAndSobs = JMap.getInt(importMapId, "EnableTearsAndSobs") As Bool
     EnableMascaraSmears = JMap.getInt(importMapId, "EnableMascaraSmears") As Bool
+    UseLacrimaTears = JMap.getInt(importMapId, "UseLacrimaTears", 1) As Bool
+    LacrimaCrySeconds = JMap.getFlt(importMapId, "LacrimaCrySeconds", 60.0)
     
     NarrativeMode = JMap.getStr(importMapId, "NarrativeMode")
     PeriodicPlayerDescriptionsOption = JMap.getStr(importMapId, "PeriodicPlayerDescriptionsOption")

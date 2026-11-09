@@ -23,6 +23,7 @@
              fallback for scripts P+ does not ship (e.g. PapyrusUtil) -->
         <Import>C:\Playground\Skyrim\mods\build\SexLab Framework PPLUS - V2.19.0\Source\Scripts</Import>
         <!-- P+ source dependencies: VRIK stub, UIExtensions, Lovense -->
+        <Import>C:\Playground\Skyrim\mods\Lacrima\papyrus\Source</Import>
         <Import>C:\Playground\stubs</Import>
         <Import>C:\Playground\Skyrim\mods\build\UIExtensions\scripts\source</Import>
         <Import>C:\Playground\Skyrim\mods\build\SkyrimLovense-0.1.0\Source\Scripts</Import>

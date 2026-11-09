@@ -129,6 +129,11 @@ Event UpdateSystem(Int oldVersion, Int newVersion)
         If oldVersion < 10019
             Config.SpeakNpcLines = True
         EndIf
+        ; The same for the settings 1.0023 adds.
+        If oldVersion < 10023
+            Config.UseLacrimaTears = True
+            Config.LacrimaCrySeconds = 60.0
+        EndIf
 
         Config.ExportSettings()
 

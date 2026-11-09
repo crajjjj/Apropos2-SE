@@ -10,7 +10,8 @@ Mark each row: ✅ pass · ⚠️ partial · ❌ fail. Note the game version / l
 Apropos2 hooks SexLab animation events and narrates them as on-screen text ("descriptions"),
 tracks per-orifice **Wear & Tear (W&T)** on the player and (optionally) NPCs, and turns high W&T
 into gameplay **effects** (debuff spells, staggers, body morphs) and visual **abuse textures**
-(via SlaveTats). Everything is driven from the **Apropos2 MCM**.
+(via SlaveTats; with Lacrima installed the tears and mascara levels make the character cry
+real tears instead). Everything is driven from the **Apropos2 MCM**.
 
 Key concepts a tester should keep in mind:
 - **State 0–9** per orifice (Vaginal / Anal / Oral). Higher = more worn. State ≥ 4 triggers debuff spells.
@@ -74,6 +75,7 @@ Precondition: Wear And Tear → **Enable Wear And Tear** ON. Watch the player ro
 | 2.10 | UBE abuse textures | Actor of a UBE race (`UBE_AllRace.esp`), with the `Apropos2_UBE` texture set installed | Abuse textures line up with the UBE body (SlaveTats texture path starts with `Apropos2_UBE\`); a non-UBE actor in the same save keeps the stock set |
 | 2.11 | UBE without the texture set | UBE race, `textures\actors\character\slavetats\Apropos2_UBE` absent | Stock textures are applied (present, though not fitted to the UBE body); no missing-texture errors |
 | 2.12 | W&T change event (1.0020) | With SL Widgets 2.3.0+ (W&T meter or icons on), complete a scene that raises a stage; then set a stage in **Wear And Tear Actors**; then let it heal a stage | Each stage change sends `Apropos2WearTearChanged` (sender = the actor, strArg = Vaginal / Anal / Oral, numArg = the new stage): the SL Widgets meter or icon moves within about a second of the change, not on its next poll. No event when the stage stays the same |
+| 2.13 | Tears via Lacrima (1.0023) | Lacrima 0.2+ installed, Wear And Tear → **Tears via Lacrima** ON, **Enable 'Tears & Sobs' Textures** ON; complete an aggressive scene as the victim | After the scene the victim cries: tears run down the cheeks for up to **Lacrima Crying Time** seconds (shorter at low abuse), running mascara if **Enable Mascara Smear Textures** is ON; no Tears / Sob / Running Mascara SlaveTats textures on the face (the other abuse textures as before). A consensual scene afterwards starts no crying. **Tears via Lacrima** OFF brings the SlaveTats face textures back |
 
 ---
 

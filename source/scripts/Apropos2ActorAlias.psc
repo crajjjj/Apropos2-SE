@@ -69,6 +69,13 @@ Int _lastTearsSobsTxrMapId
 Int _lastMascaraSmearTxrMapId1
 Int _lastMascaraSmearTxrMapId2
 
+; Lacrima (procedural tears) in place of the tears and mascara textures: whether this
+; alias made the actor cry, and whether an abusive scene raised the abuse W&T since the
+; last texture update (a consensual scene re-applies the textures too, and must not
+; start a cry)
+Bool _lacrimaCrying = False
+Bool _lacrimaAbusePending = False
+
 Int _currentHour = 0
 Float _lastGameTime = 0.0
 
@@ -608,8 +615,27 @@ State Tracking
         ; so existing abuse textures get cleaned up instead of being left stuck on the actor.
         RemoveAllAbuseTextures(anActor)
 
+        ; Lacrima, when installed and chosen, sheds real tears for the tears and mascara
+        ; levels; the Slavetats textures for them are then skipped. A cry starts only after
+        ; a scene that raised the abuse W&T, never on a degrade, a heal or a load.
+        Bool abused = _lacrimaAbusePending
+        _lacrimaAbusePending = False
+        Bool tearsByLacrima = Config.UseLacrima()
+        Bool tatsPresent = Config.CheckSystemComponent("Slavetats")
+
         If !Config.EnableSkinTextures
-            Slavetats.synchronize_tattoos(anActor, True)
+            StopLacrimaTears(anActor)
+            If tatsPresent
+                Slavetats.synchronize_tattoos(anActor, True)
+            EndIf
+            Return
+        EndIf
+
+        If tearsByLacrima && increasingAbuse && abused
+            CryWithLacrima(anActor, AverageAbuseState)
+        EndIf
+
+        If !tatsPresent
             Return
         EndIf
 
@@ -620,6 +646,8 @@ State Tracking
                 Int metric = AverageAbuseState
                 If metric == 9
                     _lastAfterEffectsFaceTxrMapId = AddTattoo(anActor, "battered", "After Effects\\face_battered.dds", "After Effects", "Face", slot)
+                ElseIf tearsByLacrima
+                    ; the tears came from Lacrima above
                 ElseIf metric == 8 && increasingAbuse
                     _lastTearsSobsTxrMapId = AddTattoo(anActor, "Sob 2", "Sob Tears\\sob_2.dds", "Tears", "Face", slot)
                 ElseIf metric == 7 && increasingAbuse
@@ -631,15 +659,15 @@ State Tracking
                 ElseIf metric == 4 && increasingAbuse
                     _lastTearsSobsTxrMapId = AddTattoo(anActor, "Tears 1", "Sob Tears\\tears_1.dds", "Tears", "Face", slot)
                 EndIf
-            EndIf     
+            EndIf
 
-            If Config.EnableMascaraSmears && increasingAbuse
+            If Config.EnableMascaraSmears && increasingAbuse && !tearsByLacrima
                 Int metric = AverageAbuseState
                 If metric <= 3 && metric > 0
                     _lastMascaraSmearTxrMapId1 = AddTattoo(anActor, "Running Mascara (left)", "makeup\\left_cheek_tears.dds", "Makeup", "Face", slot, colorTint=Config.MascaraTatsColorTint)
                     _lastMascaraSmearTxrMapId2 = AddTattoo(anActor, "Running Mascara (right)", "makeup\\right_cheek_tears.dds", "Makeup", "Face", slot, colorTint=Config.MascaraTatsColorTint)
                 EndIf
-            EndIf      
+            EndIf
 
             If Config.EnableAfterEffects
                 Int metric = Max4(AverageAbuseState, _abuseAnalState, _abuseOralState, _abuseVaginalState)
@@ -866,6 +894,7 @@ State Tracking
         Actor anActor = GetActor()
         If anActor
             RemoveAllAbuseTextures(anActor, True)
+            StopLacrimaTears(anActor)
             DispellAllSpells(anActor)
             ClearWTMorphs()
         EndIf
@@ -927,6 +956,7 @@ State Tracking
 
             _abuseVaginalWearTear = CalculateIncreasedWearTearValue(amountApplied, _abuseVaginalWearTear)
             _abuseVaginalState = Apropos2Util.MapWearTearAmountToState(_abuseVaginalWearTear)
+            _lacrimaAbusePending = True
             LogWearTearChange("abuse-vaginal", _abuseVaginalWearTear, _abuseVaginalState)
 
             If isCreature && Config.EnableCutScratches
@@ -1033,6 +1063,7 @@ State Tracking
 
             _abuseAnalWearTear = CalculateIncreasedWearTearValue(amountApplied, _abuseAnalWearTear)
             _abuseAnalState = Apropos2Util.MapWearTearAmountToState(_abuseAnalWearTear)
+            _lacrimaAbusePending = True
             LogWearTearChange("abuse-anal", _abuseAnalWearTear, _abuseAnalState)
 
             If isCreature && Config.EnableCutScratches
@@ -1137,6 +1168,7 @@ State Tracking
 
             _abuseOralWearTear = CalculateIncreasedWearTearValue(amountApplied, _abuseOralWearTear)
             _abuseOralState = Apropos2Util.MapWearTearAmountToState(_abuseOralWearTear)
+            _lacrimaAbusePending = True
             LogWearTearChange("abuse-oral", _abuseOralWearTear, _abuseOralState)
 
             If isCreature && Config.EnableCutScratches
@@ -1295,6 +1327,7 @@ State ClearTracking
 
         If anActor
             RemoveAllAbuseTextures(anActor, True)
+            StopLacrimaTears(anActor)
             DispellAllSpells(anActor)
 			ClearWTMorphs()
             SendWearTearStateChanged(anActor, "Oral", _oralState, 0)
@@ -1321,6 +1354,7 @@ State ClearTracking
         _abuseVaginalState = 0
         _abuseAnalState = 0
         _abuseOralState = 0
+        _lacrimaAbusePending = False
 
         _creatureAbuseVaginalWearTear = 0
         _creatureAbuseAnalWearTear = 0
@@ -1494,6 +1528,49 @@ Int Function AddTattoo(Actor anActor, String name, String texture, String sectio
     Debug("Attempts to call AddTattoo while in empty state. Should be called in Tracking state")
     ; Specifically do nothing in the default state    
     Return -1
+EndFunction
+
+; Lacrima's stand-in for the 'Tears & Sobs' and 'Mascara Smears' face textures: the actor
+; cries, harder and longer the higher the average abuse level. Levels 1 to 3 are the
+; 'Mascara Smears' range (a short, light cry that leaves running mascara), 4 to 9 the
+; 'Tears & Sobs' range; each follows its own MCM switch, like the textures it replaces.
+; Script level, not Tracking state: a plain helper the state functions call.
+Function CryWithLacrima(Actor anActor, Int metric)
+    If metric <= 0 || !anActor
+        Return
+    ElseIf metric <= 3
+        If !Config.EnableMascaraSmears
+            Return
+        EndIf
+    ElseIf !Config.EnableTearsAndSobs
+        Return
+    EndIf
+    If metric > 9
+        metric = 9
+    EndIf
+    Float intensity = 0.1 + 0.1 * metric ; 0.2 at level 1, 1.0 at level 9
+    Int streams = 1 + (metric - 1) / 3 ; points per eye the tears start from: 1, 2 or 3
+    Float seconds = Config.LacrimaCrySeconds * (0.25 + 0.75 * (metric - 1) / 8.0)
+    Float mascara = -1.0 ; Lacrima's own setting decides
+    If Config.EnableMascaraSmears
+        mascara = 1.0
+    EndIf
+    Debug("Lacrima: " + anActor.GetDisplayName() + " cries at abuse level " + metric + ", intensity " + intensity + ", " + seconds + " s, " + streams + " streams, mascara " + mascara)
+    Lacrima.CryEx(anActor, intensity, seconds, streams, mascara)
+    _lacrimaCrying = True
+EndFunction
+
+; Ends a crying this alias started (another mod's crying is left alone) and dries the
+; face, mascara included. Called where the face textures are removed for good.
+Function StopLacrimaTears(Actor anActor)
+    If !_lacrimaCrying
+        Return
+    EndIf
+    _lacrimaCrying = False
+    If anActor && Config.CheckSystemComponent("Lacrima")
+        Lacrima.StopCrying(anActor, True)
+        Lacrima.WipeTears(anActor)
+    EndIf
 EndFunction
 
 ; UBE (Ultimate Body Enhancer) races have their own body and head UVs, so the stock abuse textures
